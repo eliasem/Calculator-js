@@ -54,10 +54,24 @@ module.exports = function(grunt) {
         "watch": {
             "all": {
                 "files": [ "app/**", "test/**/*.js", "Gruntfile.js", "index.html", "jshintrc" ],
-                "tasks": [ "rel" ]
+                "tasks": [ "local" ]
             }
         },
         "requirejs": {
+            "local": {
+                "options": {
+                    "baseUrl": "temp/build/scripts",
+                    "mainConfigFile": "temp/build/config.js",
+                    "name": "../../../bower_components/almond/almond",
+                    "include": "main",
+                    "out": "dist/<%= projName %>.js",
+                    "wrap": {
+                        "startFile" : "app/wrap.start",
+                        "endFile" : "app/wrap.end"
+                    },
+                    optimize: 'none'
+                }
+            },
             "prod": {
                 "options": {
                     "baseUrl": "temp/build/scripts",
@@ -112,6 +126,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks("grunt-parallel");
 
     // Define grunt tasks
-    grunt.registerTask("rel", ["clean:build","jshint","copy:prepareBuild","less:prod","babel:build","copy:prod","mocha:dot","requirejs"]);
-    grunt.registerTask("default", ["rel","parallel:watch"]);
+    grunt.registerTask("local", ["clean:build","jshint","copy:prepareBuild","less:prod","babel:build","copy:prod","mocha:dot","requirejs:local"]);
+    grunt.registerTask("rel", ["clean:build","jshint","copy:prepareBuild","less:prod","babel:build","copy:prod","mocha:dot","requirejs:prod"]);
+    grunt.registerTask("default", ["local","parallel:watch"]);
 };

@@ -1,0 +1,33 @@
+@import url(//fonts.googleapis.com/css?family=Redressed);@font-face {
+    font-family: 'calculator';
+    src:
+        url('../assets/fonts/calculator.ttf?rxp5tr') format('truetype'),
+        url('../assets/fonts/calculator.woff?rxp5tr') format('woff'),
+        url('../assets/fonts/calculator.svg?rxp5tr#calculator') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.icon {
+    /* use !important to prevent issues with browser extensions that change fonts */
+    font-family: 'calculator' !important;
+    speak: none;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+
+    /* Better Font Rendering =========== */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-backspace:before {
+    content: "\e900";
+}
+.icon-history:before {
+    content: "\e901";
+}
+
+body{margin:0}.toolbar{height:10vh;padding:0 15px;position:relative;max-height:50px}.toolbar::before{content:'';height:100%;display:inline-block;vertical-align:middle}.toolbar .title{display:inline-block;vertical-align:middle;text-transform:uppercase;font-size:20px;font-weight:700}.toolbar .history{position:absolute;top:0;bottom:0;right:15px;display:inline-block;height:50px;width:50px;margin:auto;font-size:20px}.toolbar .history::before{display:block;top:0;bottom:0;left:0;right:0;margin:auto;position:absolute;width:20px;height:20px}.output{height:10vh;min-height:60px;padding:0 15px}.row{display:flex;justify-content:space-between;align-items:center}.row .calc-button{display:inline-block;padding:15px;text-align:center;width:100%;height:100%;box-sizing:border-box;vertical-align:middle}.row .calc-button::before{content:'';display:inline-block;height:100%;vertical-align:middle}.m-history .triangle{position:relative;width:0;height:0;display:inline-block;vertical-align:super}.m-history .triangle.down{border-top:solid black 5px;border-left:solid transparent 5px;border-right:solid transparent 5px}.math{font-family:'Redressed',cursive}

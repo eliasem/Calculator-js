@@ -1,0 +1,32 @@
+@font-face {
+    font-family: 'calculator';
+    src:
+        url('../assets/fonts/calculator.ttf?rxp5tr') format('truetype'),
+        url('../assets/fonts/calculator.woff?rxp5tr') format('woff'),
+        url('../assets/fonts/calculator.svg?rxp5tr#calculator') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.icon {
+    /* use !important to prevent issues with browser extensions that change fonts */
+    font-family: 'calculator' !important;
+    speak: none;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+
+    /* Better Font Rendering =========== */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-backspace:before {
+    content: "\e900";
+}
+.icon-history:before {
+    content: "\e901";
+}
+

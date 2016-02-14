@@ -1,8 +1,17 @@
-/*globals window*/
 import 'babelPolyfill';
 
 import $ from 'jquery';
 
-import Cal from 'calculator/Calculator';
+import Layout from 'calculator/lib/Layout';
 
-export let Calculator = Cal;
+export default class {
+    constructor(options){
+        this.$el = $("<div class='calculator'>");
+
+        setupLayout.call(this);
+    }
+}
+
+function setupLayout(){
+    this.$el.append(new Layout().$el);
+}

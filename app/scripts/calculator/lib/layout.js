@@ -10,9 +10,15 @@ export default class {
     constructor(options){
         this.mode = 'standard';
 
+        this.buttons = [];
+
         buildLayout.call(this);
     }
+    getReference(referenceString){
+        return this['$' + referenceString.substr(1)];
+    }
 }
+
 
 function getConfig(mode){
     return Mode[mode];
@@ -20,6 +26,8 @@ function getConfig(mode){
 
 function buildLayout(){
     let config = getConfig(this.mode);
+
+    if(!config){ return; }
 
     this.$el = $(`<div class="${this.mode}"></div>`);
 
@@ -39,10 +47,11 @@ function buildLayout(){
     this.$el.append(this.$output);
 
     for(let row =0; row< config.rows.length;  row++ ){
-        let $row = $('<div class="row"></div>');
+        let $row = $(`<div class="row ${config.rows[row].className}"></div>`);
 
         for(let b in config.rows[row].buttons){
             $row.append(config.rows[row].buttons[b].$el);
+            this.buttons.push(config.rows[row].buttons[b]);
         }
 
         $row.css('height', `${80/config.rows.length}vh` );

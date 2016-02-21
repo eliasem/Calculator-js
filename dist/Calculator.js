@@ -7,7 +7,7 @@
         root.Calculator = factory(root.$);
     }
 }(this, function($) {/**
- * @license almond 0.2.9 Copyright (c) 2011-2014, The Dojo Foundation All Rights Reserved.
+ * @license almond 0.3.1 Copyright (c) 2011-2014, The Dojo Foundation All Rights Reserved.
  * Available via the MIT or new BSD license.
  * see: http://github.com/jrburke/almond for details
  */
@@ -52,12 +52,6 @@ var requirejs, require, define;
             //otherwise, assume it is a top-level require that will
             //be relative to baseUrl in the end.
             if (baseName) {
-                //Convert baseName to array, and lop off the last part,
-                //so that . matches that "directory" and not name of the baseName's
-                //module. For instance, baseName of "one/two/three", maps to
-                //"one/two/three.js", but we want the directory, "one/two" for
-                //this normalization.
-                baseParts = baseParts.slice(0, baseParts.length - 1);
                 name = name.split('/');
                 lastIndex = name.length - 1;
 
@@ -66,7 +60,11 @@ var requirejs, require, define;
                     name[lastIndex] = name[lastIndex].replace(jsSuffixRegExp, '');
                 }
 
-                name = baseParts.concat(name);
+                //Lop off the last part of baseParts, so that . matches the
+                //"directory" and not name of the baseName's module. For instance,
+                //baseName of "one/two/three", maps to "one/two/three.js", but we
+                //want the directory, "one/two" for this normalization.
+                name = baseParts.slice(0, baseParts.length - 1).concat(name);
 
                 //start trimDots
                 for (i = 0; i < name.length; i += 1) {
@@ -158,7 +156,15 @@ var requirejs, require, define;
             //A version of a require function that passes a moduleName
             //value for items that may need to
             //look up paths relative to the moduleName
-            return req.apply(undef, aps.call(arguments, 0).concat([relName, forceSync]));
+            var args = aps.call(arguments, 0);
+
+            //If first arg is not require('string'), and there is only
+            //one arg, it is the array form without a callback. Insert
+            //a null so that the following concat is correct.
+            if (typeof args[0] !== 'string' && args.length === 1) {
+                args.push(null);
+            }
+            return req.apply(undef, args.concat([relName, forceSync]));
         };
     }
 
@@ -408,6 +414,9 @@ var requirejs, require, define;
     requirejs._defined = defined;
 
     define = function (name, deps, callback) {
+        if (typeof name !== 'string') {
+            throw new Error('See almond README: incorrect module build, no module name');
+        }
 
         //This module may not have dependencies
         if (!deps.splice) {
@@ -10262,6 +10271,92 @@ if ( !noGlobal ) {
 return jQuery;
 }));
 
+define('calculator/lib/Actions',["exports"], function (exports) {
+    "use strict";
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+
+    function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+            throw new TypeError("Cannot call a class as a function");
+        }
+    }
+
+    var _createClass = function () {
+        function defineProperties(target, props) {
+            for (var i = 0; i < props.length; i++) {
+                var descriptor = props[i];
+                descriptor.enumerable = descriptor.enumerable || false;
+                descriptor.configurable = true;
+                if ("value" in descriptor) descriptor.writable = true;
+                Object.defineProperty(target, descriptor.key, descriptor);
+            }
+        }
+
+        return function (Constructor, protoProps, staticProps) {
+            if (protoProps) defineProperties(Constructor.prototype, protoProps);
+            if (staticProps) defineProperties(Constructor, staticProps);
+            return Constructor;
+        };
+    }();
+
+    var _class = function () {
+        function _class(actions) {
+            _classCallCheck(this, _class);
+
+            this.actions = actions;
+        }
+
+        _createClass(_class, [{
+            key: "getAction",
+            value: function getAction(actionName) {
+                return this.actions[actionName];
+            }
+        }]);
+
+        return _class;
+    }();
+
+    exports.default = _class;
+});
+//# sourceMappingURL=Actions.js.map
+;
+define('calculator/lib/actions/PrintToScreen',["exports"], function (exports) {
+    "use strict";
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+
+    exports.default = function ($answer, mathSymbol) {
+        $answer.append(mathSymbol);
+    };
+});
+//# sourceMappingURL=PrintToScreen.js.map
+;
+define('calculator/config/actions',['exports', '../lib/actions/PrintToScreen'], function (exports, _PrintToScreen) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+
+    var _PrintToScreen2 = _interopRequireDefault(_PrintToScreen);
+
+    function _interopRequireDefault(obj) {
+        return obj && obj.__esModule ? obj : {
+            default: obj
+        };
+    }
+
+    exports.default = {
+        'PrintToScreen': _PrintToScreen2.default
+    };
+});
+//# sourceMappingURL=actions.js.map
+;
 define('calculator/config/buttons',['exports'], function (exports) {
     'use strict';
 
@@ -10274,7 +10369,7 @@ define('calculator/config/buttons',['exports'], function (exports) {
         'M_PLUS': { 'html': 'M+', 'class': 'm-plus' },
         'M_MINUS': { 'html': 'M-', 'class': 'm-minus' },
         'MS': { 'html': 'MS', 'class': 'ms' },
-        'M_HISTORY': { 'html': 'M <div class="triangle down">', 'class': 'm-history' },
+        'M_HISTORY': { 'html': 'M <div class="triangle down">', 'class': 'm-history', controlButton: true },
         'PERCENT': { 'html': '%', 'class': 'percent' },
         'SQRT': { 'html': '&radic;', 'class': 'sqrt' },
         'SQUARED': { 'html': '<span class="math">x</span><sup>2</sup>', 'class': 'squared' },
@@ -10283,21 +10378,21 @@ define('calculator/config/buttons',['exports'], function (exports) {
         'C': { 'html': 'C', 'class': 'c' },
         'BACKSPACE': { 'html': '<span class="icon icon-backspace">', 'class': 'backspace' },
         'DIVIDE': { 'html': '&divide;', 'class': 'divide' },
-        'SEVEN': { 'html': '7', 'class': 'number-7' },
-        'EIGHT': { 'html': '8', 'class': 'number-8' },
-        'NINE': { 'html': '9', 'class': 'number-9' },
+        'SEVEN': { 'html': '7', 'class': 'number-7', actionName: 'PrintToScreen', actionArgs: ["&answer", "7"] },
+        'EIGHT': { 'html': '8', 'class': 'number-8', actionName: 'PrintToScreen', actionArgs: ["&answer", "8"] },
+        'NINE': { 'html': '9', 'class': 'number-9', actionName: 'PrintToScreen', actionArgs: ["&answer", "9"] },
         'TIMES': { 'html': '&times;', 'class': 'times' },
-        'FOUR': { 'html': '4', 'class': 'number-4' },
-        'FIVE': { 'html': '5', 'class': 'number-5' },
-        'SIX': { 'html': '6', 'class': 'number-6' },
+        'FOUR': { 'html': '4', 'class': 'number-4', actionName: 'PrintToScreen', actionArgs: ["&answer", "4"] },
+        'FIVE': { 'html': '5', 'class': 'number-5', actionName: 'PrintToScreen', actionArgs: ["&answer", "5"] },
+        'SIX': { 'html': '6', 'class': 'number-6', actionName: 'PrintToScreen', actionArgs: ["&answer", "6"] },
         'MINUS': { 'html': '-', 'class': 'minus' },
-        'ONE': { 'html': '1', 'class': 'number-1' },
-        'TWO': { 'html': '2', 'class': 'number-2' },
-        'THREE': { 'html': '3', 'class': 'number-3' },
+        'ONE': { 'html': '1', 'class': 'number-1', actionName: 'PrintToScreen', actionArgs: ["&answer", "1"] },
+        'TWO': { 'html': '2', 'class': 'number-2', actionName: 'PrintToScreen', actionArgs: ["&answer", "2"] },
+        'THREE': { 'html': '3', 'class': 'number-3', actionName: 'PrintToScreen', actionArgs: ["&answer", "3"] },
         'PLUS': { 'html': '+', 'class': 'plus' },
         'PLUS_MINUS': { 'html': '&plusmn;', 'class': 'plus-minus' },
-        'ZERO': { 'html': '0', 'class': 'number-0' },
-        'DECIMAL': { 'html': '.', 'class': 'decimal' },
+        'ZERO': { 'html': '0', 'class': 'number-0', actionName: 'PrintToScreen', actionArgs: ["&answer", "0"] },
+        'DECIMAL': { 'html': '.', 'class': 'decimal', actionName: 'PrintToScreen', actionArgs: ["&answer", "."] },
         'EQUAL': { 'html': '=', 'class': 'equal' }
     };
 });
@@ -10324,14 +10419,29 @@ define('calculator/lib/Button',['exports', 'jquery'], function (exports, _jquery
         }
     }
 
-    var Button = function Button(config) {
+    var Button = function Button(id, config) {
         _classCallCheck(this, Button);
 
+        this.id = id;
         this.html = config.html;
         this.class = config.class;
+        this.actionName = config.actionName;
+        this.actionArgs = config.actionArgs;
 
         this.$el = (0, _jquery2.default)('<div class="calc-button ' + this.class + '">' + this.html + '</div>');
+
+        this.$el.on('mousedown', function (e) {
+            return (0, _jquery2.default)(e.target).addClass('pressed');
+        });
+        this.$el.on('mouseup', function (e) {
+            return (0, _jquery2.default)(e.target).removeClass('pressed');
+        });
+        this.$el.on('click', onClick.bind(this));
     };
+
+    function onClick() {
+        this.$el.trigger('keypress', this);
+    }
 
     exports.default = Button;
 });
@@ -10360,7 +10470,7 @@ define('calculator/constant/Buttons',['exports', '../config/buttons', '../lib/Bu
         if (!_buttons2.default.hasOwnProperty(b)) {
             continue;
         }
-        Buttons[b] = new _Button2.default(_buttons2.default[b]);
+        Buttons[b] = new _Button2.default(b, _buttons2.default[b]);
     }
 
     exports.default = Buttons;
@@ -10396,15 +10506,20 @@ define('calculator/config/standard',['exports', 'calculator/constant/Buttons'], 
         }, {
             buttons: [_Buttons2.default.PERCENT, _Buttons2.default.SQRT, _Buttons2.default.SQUARED, _Buttons2.default.FRAC]
         }, {
-            buttons: [_Buttons2.default.CE, _Buttons2.default.C, _Buttons2.default.BACKSPACE, _Buttons2.default.DIVIDE]
+            buttons: [_Buttons2.default.CE, _Buttons2.default.C, _Buttons2.default.BACKSPACE, _Buttons2.default.DIVIDE],
+            className: 'main'
         }, {
-            buttons: [_Buttons2.default.SEVEN, _Buttons2.default.EIGHT, _Buttons2.default.NINE, _Buttons2.default.TIMES]
+            buttons: [_Buttons2.default.SEVEN, _Buttons2.default.EIGHT, _Buttons2.default.NINE, _Buttons2.default.TIMES],
+            className: 'main'
         }, {
-            buttons: [_Buttons2.default.FOUR, _Buttons2.default.FIVE, _Buttons2.default.SIX, _Buttons2.default.MINUS]
+            buttons: [_Buttons2.default.FOUR, _Buttons2.default.FIVE, _Buttons2.default.SIX, _Buttons2.default.MINUS],
+            className: 'main'
         }, {
-            buttons: [_Buttons2.default.ONE, _Buttons2.default.TWO, _Buttons2.default.THREE, _Buttons2.default.PLUS]
+            buttons: [_Buttons2.default.ONE, _Buttons2.default.TWO, _Buttons2.default.THREE, _Buttons2.default.PLUS],
+            className: 'main'
         }, {
-            buttons: [_Buttons2.default.PLUS_MINUS, _Buttons2.default.ZERO, _Buttons2.default.DECIMAL, _Buttons2.default.EQUAL]
+            buttons: [_Buttons2.default.PLUS_MINUS, _Buttons2.default.ZERO, _Buttons2.default.DECIMAL, _Buttons2.default.EQUAL],
+            className: 'main'
         }]
     };
 });
@@ -10433,17 +10548,48 @@ define('calculator/lib/Layout',['exports', 'jquery', '../config/standard'], func
         }
     }
 
+    var _createClass = function () {
+        function defineProperties(target, props) {
+            for (var i = 0; i < props.length; i++) {
+                var descriptor = props[i];
+                descriptor.enumerable = descriptor.enumerable || false;
+                descriptor.configurable = true;
+                if ("value" in descriptor) descriptor.writable = true;
+                Object.defineProperty(target, descriptor.key, descriptor);
+            }
+        }
+
+        return function (Constructor, protoProps, staticProps) {
+            if (protoProps) defineProperties(Constructor.prototype, protoProps);
+            if (staticProps) defineProperties(Constructor, staticProps);
+            return Constructor;
+        };
+    }();
+
     var Mode = {
         standard: _standard2.default
     };
 
-    var _class = function _class(options) {
-        _classCallCheck(this, _class);
+    var _class = function () {
+        function _class(options) {
+            _classCallCheck(this, _class);
 
-        this.mode = 'standard';
+            this.mode = 'standard';
 
-        buildLayout.call(this);
-    };
+            this.buttons = [];
+
+            buildLayout.call(this);
+        }
+
+        _createClass(_class, [{
+            key: 'getReference',
+            value: function getReference(referenceString) {
+                return this['$' + referenceString.substr(1)];
+            }
+        }]);
+
+        return _class;
+    }();
 
     exports.default = _class;
 
@@ -10454,6 +10600,10 @@ define('calculator/lib/Layout',['exports', 'jquery', '../config/standard'], func
 
     function buildLayout() {
         var config = getConfig(this.mode);
+
+        if (!config) {
+            return;
+        }
 
         this.$el = (0, _jquery2.default)('<div class="' + this.mode + '"></div>');
 
@@ -10473,10 +10623,11 @@ define('calculator/lib/Layout',['exports', 'jquery', '../config/standard'], func
         this.$el.append(this.$output);
 
         for (var row = 0; row < config.rows.length; row++) {
-            var $row = (0, _jquery2.default)('<div class="row"></div>');
+            var $row = (0, _jquery2.default)('<div class="row ' + config.rows[row].className + '"></div>');
 
             for (var b in config.rows[row].buttons) {
                 $row.append(config.rows[row].buttons[b].$el);
+                this.buttons.push(config.rows[row].buttons[b]);
             }
 
             $row.css('height', 80 / config.rows.length + 'vh');
@@ -10486,6 +10637,169 @@ define('calculator/lib/Layout',['exports', 'jquery', '../config/standard'], func
     }
 });
 //# sourceMappingURL=Layout.js.map
+;
+define('calculator/lib/math/KeypressManager',['exports'], function (exports) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+
+    function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+            throw new TypeError("Cannot call a class as a function");
+        }
+    }
+
+    var _createClass = function () {
+        function defineProperties(target, props) {
+            for (var i = 0; i < props.length; i++) {
+                var descriptor = props[i];
+                descriptor.enumerable = descriptor.enumerable || false;
+                descriptor.configurable = true;
+                if ("value" in descriptor) descriptor.writable = true;
+                Object.defineProperty(target, descriptor.key, descriptor);
+            }
+        }
+
+        return function (Constructor, protoProps, staticProps) {
+            if (protoProps) defineProperties(Constructor.prototype, protoProps);
+            if (staticProps) defineProperties(Constructor, staticProps);
+            return Constructor;
+        };
+    }();
+
+    var _class = function () {
+        function _class() {
+            _classCallCheck(this, _class);
+
+            this.stack = [];
+        }
+
+        _createClass(_class, [{
+            key: 'registerKeypress',
+            value: function registerKeypress($button) {
+                $button.on('keypress', function (e, button) {
+                    addKey.call(this, button.id);
+                }.bind(this));
+            }
+        }]);
+
+        return _class;
+    }();
+
+    exports.default = _class;
+
+
+    function addKey(id) {
+        this.stack.push(id);
+    }
+});
+//# sourceMappingURL=KeypressManager.js.map
+;
+define('calculator/lib/math/ButtonManager',['exports'], function (exports) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+
+    function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+            throw new TypeError("Cannot call a class as a function");
+        }
+    }
+
+    var _createClass = function () {
+        function defineProperties(target, props) {
+            for (var i = 0; i < props.length; i++) {
+                var descriptor = props[i];
+                descriptor.enumerable = descriptor.enumerable || false;
+                descriptor.configurable = true;
+                if ("value" in descriptor) descriptor.writable = true;
+                Object.defineProperty(target, descriptor.key, descriptor);
+            }
+        }
+
+        return function (Constructor, protoProps, staticProps) {
+            if (protoProps) defineProperties(Constructor.prototype, protoProps);
+            if (staticProps) defineProperties(Constructor, staticProps);
+            return Constructor;
+        };
+    }();
+
+    var _class = function () {
+        function _class(actions, layout) {
+            _classCallCheck(this, _class);
+
+            this.actions = actions;
+            this.layout = layout;
+        }
+
+        _createClass(_class, [{
+            key: 'registerButton',
+            value: function registerButton($button) {
+                $button.on('keypress', function (e, button) {
+                    onKeypress.call(this, button);
+                }.bind(this));
+            }
+        }]);
+
+        return _class;
+    }();
+
+    exports.default = _class;
+
+
+    function onKeypress(button) {
+        var action = this.actions.getAction(button.actionName);
+        if (!action) {
+            return;
+        }
+
+        var actionArgs = getActionArgs.call(this, button.actionArgs);
+
+        action.apply(action, actionArgs);
+    }
+
+    function getActionArgs(argStrings) {
+        var actionArgs = [];
+
+        var _iteratorNormalCompletion = true;
+        var _didIteratorError = false;
+        var _iteratorError = undefined;
+
+        try {
+            for (var _iterator = argStrings[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                var argString = _step.value;
+
+                var arg = argString;
+
+                if (arg[0] === '&') {
+                    arg = this.layout.getReference(arg);
+                }
+
+                actionArgs.push(arg);
+            }
+        } catch (err) {
+            _didIteratorError = true;
+            _iteratorError = err;
+        } finally {
+            try {
+                if (!_iteratorNormalCompletion && _iterator.return) {
+                    _iterator.return();
+                }
+            } finally {
+                if (_didIteratorError) {
+                    throw _iteratorError;
+                }
+            }
+        }
+
+        return actionArgs;
+    }
+});
+//# sourceMappingURL=ButtonManager.js.map
 ;
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /// <reference path="../typings/tsd.d.ts" />
@@ -15000,43 +15314,84 @@ process.umask = function() { return 0; };
 
 define("babelPolyfill", function(){});
 
-define('main',['exports', 'jquery', 'calculator/lib/Layout', 'babelPolyfill'], function (exports, _jquery, _Layout) {
-    'use strict';
+define('main',['exports', 'jquery', 'calculator/lib/Actions', 'calculator/config/actions', 'calculator/lib/Layout', 'calculator/lib/math/KeypressManager', 'calculator/lib/math/ButtonManager', 'babelPolyfill'], function (exports, _jquery, _Actions, _actions, _Layout, _KeypressManager, _ButtonManager) {
+        'use strict';
 
-    Object.defineProperty(exports, "__esModule", {
-        value: true
-    });
+        Object.defineProperty(exports, "__esModule", {
+                value: true
+        });
 
-    var _jquery2 = _interopRequireDefault(_jquery);
+        var _jquery2 = _interopRequireDefault(_jquery);
 
-    var _Layout2 = _interopRequireDefault(_Layout);
+        var _Actions2 = _interopRequireDefault(_Actions);
 
-    function _interopRequireDefault(obj) {
-        return obj && obj.__esModule ? obj : {
-            default: obj
-        };
-    }
+        var _actions2 = _interopRequireDefault(_actions);
 
-    function _classCallCheck(instance, Constructor) {
-        if (!(instance instanceof Constructor)) {
-            throw new TypeError("Cannot call a class as a function");
+        var _Layout2 = _interopRequireDefault(_Layout);
+
+        var _KeypressManager2 = _interopRequireDefault(_KeypressManager);
+
+        var _ButtonManager2 = _interopRequireDefault(_ButtonManager);
+
+        function _interopRequireDefault(obj) {
+                return obj && obj.__esModule ? obj : {
+                        default: obj
+                };
         }
-    }
 
-    var _class = function _class(options) {
-        _classCallCheck(this, _class);
+        function _classCallCheck(instance, Constructor) {
+                if (!(instance instanceof Constructor)) {
+                        throw new TypeError("Cannot call a class as a function");
+                }
+        }
 
-        this.$el = (0, _jquery2.default)("<div class='calculator'>");
+        var _class = function _class(options) {
+                _classCallCheck(this, _class);
 
-        setupLayout.call(this);
-    };
+                this.$el = (0, _jquery2.default)("<div class='calculator'>");
 
-    exports.default = _class;
+                this.layout = new _Layout2.default();
+
+                this.actions = new _Actions2.default(_actions2.default);
+
+                this.keypressManager = new _KeypressManager2.default();
+                this.buttonManager = new _ButtonManager2.default(this.actions, this.layout);
+
+                registerButtons.call(this);
+
+                this.$el.append(this.layout.$el);
+        };
+
+        exports.default = _class;
 
 
-    function setupLayout() {
-        this.$el.append(new _Layout2.default().$el);
-    }
+        function registerButtons() {
+                var _iteratorNormalCompletion = true;
+                var _didIteratorError = false;
+                var _iteratorError = undefined;
+
+                try {
+                        for (var _iterator = this.layout.buttons[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                                var button = _step.value;
+
+                                this.keypressManager.registerKeypress(button.$el);
+                                this.buttonManager.registerButton(button.$el);
+                        }
+                } catch (err) {
+                        _didIteratorError = true;
+                        _iteratorError = err;
+                } finally {
+                        try {
+                                if (!_iteratorNormalCompletion && _iterator.return) {
+                                        _iterator.return();
+                                }
+                        } finally {
+                                if (_didIteratorError) {
+                                        throw _iteratorError;
+                                }
+                        }
+                }
+        }
 });
 //# sourceMappingURL=main.js.map
 ;

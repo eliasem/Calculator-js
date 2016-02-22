@@ -12,6 +12,7 @@
     "scripturl": true,
     "debug": true,
     "esnext": true,
+    "loopfunc": true,
     "globals": {
         "exports": true,
         "module": false,

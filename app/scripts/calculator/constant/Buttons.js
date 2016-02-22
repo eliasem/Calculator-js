@@ -5,7 +5,7 @@ let Buttons = {};
 
 for(let b in ButtonConfig){
     if(!ButtonConfig.hasOwnProperty(b)){ continue; }
-    Buttons[b] = new Button(ButtonConfig[b]);
+    Buttons[b] = new Button(b, ButtonConfig[b]);
 }
 
 export default Buttons;

@@ -5,12 +5,12 @@
         "jquery": "~2",
         "requirejs": "~2",
         "requirejs-text": "~2",
-        "babelPolyfill": "https://github.com/raptor9g/babelPolyfill.git"
+        "babelPolyfill": "https://github.com/raptor9g/babelPolyfill.git#v6.3.14"
     },
     "devDependencies": {
-        "almond": "~0.2",
-        "mocha": "~1",
-        "chai": "~1",
+        "almond": "~0.3",
+        "mocha": "~2",
+        "chai": "~3",
         "sinon" : "~1"
     }
 }

@@ -11,16 +11,19 @@
     "engines":{
         "node":"*"
     },
+    "scripts": {
+        "test": "grunt local --verbose"
+    },
     "devDependencies":{
         "grunt":"~0.4.5",
-        "grunt-contrib-clean":"~0.6",
-        "grunt-contrib-copy":"~0.7",
-        "grunt-contrib-jshint":"~0.11",
+        "grunt-contrib-clean":"~1.0",
+        "grunt-contrib-copy":"~0.8",
+        "grunt-contrib-jshint":"~1.0",
         "grunt-contrib-less":"~1.0",
         "grunt-contrib-watch":"~0.6",
         "grunt-contrib-requirejs":"~0.4.4",
-        "grunt-mocha":"0.4.10",
-        "grunt-parallel": "~0.3",
+        "grunt-mocha":"~0.4",
+        "grunt-parallel": "~0.4",
         "grunt-babel": "6.0.0",
         "babel-plugin-transform-es2015-modules-amd": "~6",
         "babel-preset-es2015": "~6"

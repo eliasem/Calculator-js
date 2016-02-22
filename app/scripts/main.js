@@ -8,7 +8,7 @@ import actionConfig from 'calculator/config/actions';
 import Layout from 'calculator/lib/Layout';
 
 import KeypressManager from 'calculator/lib/math/KeypressManager';
-import ButtonManager from 'calculator/lib/math/ButtonManager';
+import ActionManager from 'calculator/lib/math/ActionManager';
 
 export default class {
     constructor(options){
@@ -19,7 +19,7 @@ export default class {
         this.actions = new Actions(actionConfig);
 
         this.keypressManager = new KeypressManager();
-        this.buttonManager = new ButtonManager(this.actions, this.layout);
+        this.actionManager = new ActionManager(this.actions, this.layout);
 
         registerButtons.call(this);
 
@@ -30,6 +30,6 @@ export default class {
 function registerButtons(){
     for (let button of this.layout.buttons){
         this.keypressManager.registerKeypress(button.$el);
-        this.buttonManager.registerButton(button.$el);
+        this.actionManager.registerButton(button.$el);
     }
 }

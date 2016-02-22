@@ -1,1 +1,2 @@
-import 'specs/lib/math/ButtonManager.spec';
+import 'specs/lib/Button.spec';
+import 'specs/lib/math/ActionManager.spec';

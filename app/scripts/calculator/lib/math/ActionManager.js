@@ -10,13 +10,22 @@ export default class {
     }
 }
 
+function* objectEntries(obj) {
+    for (let key of Object.keys(obj)) {
+        yield [key, obj[key]];
+    }
+}
+
 function onKeypress(button){
-    let action = this.actions.getAction(button.actionName);
-    if(!action){ return; }
 
-    let actionArgs = getActionArgs.call(this, button.actionArgs);
+    for(let [objectName,objectValue] of objectEntries(button.actions)){
+        let action = this.actions.getAction(objectValue.actionName);
+        if(!action){ return; }
 
-    action.apply(action, actionArgs);
+        let actionArgs = getActionArgs.call(this, objectValue.actionArgs);
+
+        action.apply(action, actionArgs);
+    }
 }
 
 function getActionArgs(argStrings) {

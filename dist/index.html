@@ -13,7 +13,10 @@
 <body>
     <script>
         $(document).ready(function(){
-            $('body').append(new Calculator().$el);
+            var calculator = new Calculator();
+            $('body').append(calculator.$el);
+
+            calculator.layout.resizeLayout();
         })
     </script>
 </body>

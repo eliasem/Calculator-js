@@ -1,5 +1,8 @@
 import $ from 'jquery';
 import standard from '../config/standard';
+import Resizer from './behaviours/Resizer';
+
+import Panel from './layout/Panel';
 
 let Mode = {
     standard: standard
@@ -13,9 +16,19 @@ export default class {
         this.buttons = [];
 
         buildLayout.call(this);
+
+        this.resizer = new Resizer(this);
     }
+    resizeLayout(){
+        this.resizer.start();
+    }
+
     getReference(referenceString){
-        return this['$' + referenceString.substr(1)];
+        let name = referenceString.substr(1);
+        if(this['$' + name]){
+            return this['$' + name];
+        }
+        return this[name];
     }
 }
 
@@ -33,7 +46,14 @@ function buildLayout(){
 
     this.$toolbar = $(`<div class="toolbar"></div>`);
     this.$toolbar.append(`<div class="title">${this.mode}</div>`);
-    this.$toolbar.append(`<div class="history icon icon-history"></div>`);
+    let $toolbarButtons = $(`<div class="buttons"></div>`);
+
+    for(let button of config.toolbar.buttons){
+        $toolbarButtons.append(button.$el);
+        this.buttons.push(button);
+    }
+
+    this.$toolbar.append($toolbarButtons);
 
     this.$el.append(this.$toolbar);
 
@@ -47,15 +67,20 @@ function buildLayout(){
     this.$el.append(this.$output);
 
     for(let row =0; row< config.rows.length;  row++ ){
-        let $row = $(`<div class="row ${config.rows[row].className}"></div>`);
+        let className = config.rows[row].className || "";
+        let $row = $(`<div class="row ${className}"></div>`);
 
         for(let b in config.rows[row].buttons){
             $row.append(config.rows[row].buttons[b].$el);
             this.buttons.push(config.rows[row].buttons[b]);
         }
 
-        $row.css('height', `${80/config.rows.length}vh` );
-
         this.$el.append($row);
     }
+
+    this.memoryStack = new Panel({ className: "memoryStackPanel"});
+    this.history = new Panel({ className: "historyPanel"});
+
+    this.$el.append(this.memoryStack.$el);
+    this.$el.append(this.history.$el);
 }

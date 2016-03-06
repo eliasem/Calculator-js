@@ -1,12 +1,21 @@
 
 
 export default {
+    'HISTORY' : { 'html': '<span class="icon icon-history">', 'class': 'history',
+        actions:{
+            'toggle': { actionName: 'ToggleClass', actionArgs: ["&history", "displayNone"]}
+        }
+    },
     'MC' : { 'html': 'MC', 'class': 'mc' },
     'MR' : { 'html': 'MR', 'class': 'mr' },
     'M_PLUS' : { 'html': 'M+', 'class': 'm-plus' },
     'M_MINUS' : { 'html': 'M-', 'class': 'm-minus' },
     'MS' : { 'html': 'MS', 'class': 'ms' },
-    'M_HISTORY' : { 'html': 'M <div class="triangle down">', 'class': 'm-history', controlButton: true },
+    'M_STACK' : { 'html': 'M <div class="triangle down">', 'class': 'm-stack',
+        actions:{
+            'toggle': { actionName: 'ToggleClass', actionArgs: ["&memoryStack", "displayNone"]}
+        }
+    },
     'PERCENT' : { 'html': '%', 'class': 'percent' },
     'SQRT' : { 'html': '&radic;', 'class': 'sqrt' },
     'SQUARED' : { 'html': '<span class="math">x</span><sup>2</sup>', 'class': 'squared' },

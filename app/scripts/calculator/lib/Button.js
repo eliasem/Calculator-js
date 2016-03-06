@@ -5,13 +5,12 @@ class Button {
         this.id = id;
         this.html = config.html;
         this.class = config.class;
-        this.actionName = config.actionName;
-        this.actionArgs = config.actionArgs;
+        this.actions = config.actions;
 
         this.$el = $(`<div class="calc-button ${this.class}">${this.html}</div>`);
 
-        this.$el.on('mousedown', e => $(e.target).addClass('pressed'));
-        this.$el.on('mouseup', e => $(e.target).removeClass('pressed'));
+        this.$el.on('mousedown', e => $(e.currentTarget).addClass('pressed'));
+        this.$el.on('mouseup mouseout', e => $(e.currentTarget).removeClass('pressed'));
         this.$el.on('click', onClick.bind(this));
     }
 }

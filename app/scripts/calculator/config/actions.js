@@ -1,5 +1,7 @@
 import PrintToScreen from '../lib/actions/PrintToScreen';
+import ToggleClass from '../lib/actions/ToggleClass';
 
 export default {
-    'PrintToScreen': PrintToScreen
+    'PrintToScreen': PrintToScreen,
+    'ToggleClass': ToggleClass
 };

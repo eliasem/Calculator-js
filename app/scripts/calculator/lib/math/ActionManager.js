@@ -18,6 +18,8 @@ function* objectEntries(obj) {
 
 function onKeypress(button){
 
+    if(!button.actions){ return; }
+
     for(let [objectName,objectValue] of objectEntries(button.actions)){
         let action = this.actions.getAction(objectValue.actionName);
         if(!action){ return; }

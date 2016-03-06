@@ -3,15 +3,13 @@ import Buttons from 'calculator/constant/Buttons';
 export default {
     toolbar:{
         title:{},
-        historyButton: {
-            anchor: 'right'
-        }
+        buttons:[Buttons.HISTORY]
     },
     expression:{},
     answer: {},
     rows:[
         {
-            buttons:[Buttons.MC, Buttons.MR, Buttons.M_PLUS, Buttons.M_MINUS, Buttons.MS, Buttons.M_HISTORY]
+            buttons:[Buttons.MC, Buttons.MR, Buttons.M_PLUS, Buttons.M_MINUS, Buttons.MS, Buttons.M_STACK]
         },
         {
             buttons: [Buttons.PERCENT, Buttons.SQRT, Buttons.SQUARED, Buttons.FRAC]

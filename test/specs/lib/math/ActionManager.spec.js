@@ -36,7 +36,17 @@ describe ('Action Manager', () => {
 
     describe('when the button is pressed', () => {
 
-        describe('invalid action name', function(){
+        describe('no actions set', () => {
+            it('should not throw if actions is not given', () => {
+                let button = createButton();
+                delete button.actions;
+
+                underTest.registerButton(button.$el);
+                expect(() => { button.$el.trigger('keypress', button); } ).to.not.throw();
+            });
+        });
+
+        describe('invalid action name', () => {
             it('should not error if the action name has not been set on first action', () => {
                 let button = createButton();
                 underTest.registerButton(button.$el);
@@ -63,7 +73,6 @@ describe ('Action Manager', () => {
             });
 
         });
-
 
         describe('correct args', () => {
             it('should call the one action', () => {

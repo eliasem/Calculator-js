@@ -6,29 +6,39 @@
 
 body { margin: 0; }
 
+.displayNone { display: none !important; }
+
 .toolbar { height: 10vh; padding: 0 15px; position: relative; max-height: 50px;
     &::before { content: ''; height: 100%; display: inline-block; vertical-align: middle; }
     .title { display: inline-block; vertical-align: middle; text-transform: uppercase; font-size: 20px; font-weight: 700; }
-    @historyFontSize: 20px;
-    .history { position: absolute; top: 0; bottom: 0; right: 15px; display: inline-block; height: 50px; width: 50px; margin: auto; font-size: @historyFontSize;
-        &::before{ display: block; top: 0; bottom: 0; left: 0; right: 0; margin: auto; position: absolute; width: @historyFontSize; height: @historyFontSize; }
+
+    .buttons{
+        @historyFontSize: 20px;
+        .history { position: absolute; top: 0; bottom: 0; right: 15px; display: inline-block; height: 50px; width: 50px; margin: auto; font-size: @historyFontSize;
+            .icon::before{ display: block; top: 0; bottom: 0; left: 0; right: 0; margin: auto; position: absolute; width: @historyFontSize; height: @historyFontSize; }
+        }
     }
 }
 .output { height: 10vh; min-height: 60px; padding: 0 15px; }
 
-.row { display: flex; justify-content: space-between; align-items: center;
-    .calc-button { display:inline-block; padding:15px; text-align: center; width: 100%; height: 100%; box-sizing: border-box; vertical-align: middle;
-        &::before { content: ''; display: inline-block; height:100%; vertical-align: middle; }
-        &.pressed { background: #dddddd; }
-    }
+.calc-button { display:inline-block; padding:15px; text-align: center; width: 100%; height: 100%; box-sizing: border-box; vertical-align: middle;
+    &::before { content: ''; display: inline-block; height:100%; vertical-align: middle; }
+    &:hover { background: #dddddd; }
+    &.pressed { background: #cccccc; }
+}
 
+.row { display: flex; justify-content: space-between; align-items: center; min-height: 50px;
     &.main{ background: #eeeeee; }
 }
 
-.m-history{
+.m-stack{
     .triangle { position: relative; width: 0; height:0; display: inline-block; vertical-align: super;
         &.down { border-top: solid black 5px; border-left: solid transparent 5px; border-right: solid transparent 5px; }
     }
+}
+
+.panel{ position: absolute; width:100%; height: 100%; top: 0;
+    .innerPanel { position: absolute; width: 100%; background: #eeeeee; bottom:0; }
 }
 
 .math{ font-family: 'Redressed', cursive; }

@@ -3,12 +3,14 @@ import 'babelPolyfill';
 import $ from 'jquery';
 
 import Actions from 'calculator/lib/Actions';
+import Calculations from 'calculator/lib/Calculations';
 import actionConfig from 'calculator/config/actions';
+import calculationConfig from 'calculator/config/calculations';
 
 import Layout from 'calculator/lib/Layout';
 
-import KeypressManager from 'calculator/lib/math/KeypressManager';
-import ActionManager from 'calculator/lib/math/ActionManager';
+import CalculationManager from 'calculator/lib/managers/CalculationManager';
+import ActionManager from 'calculator/lib/managers/ActionManager';
 
 export default class {
     constructor(options){
@@ -17,8 +19,9 @@ export default class {
         this.layout = new Layout();
 
         this.actions = new Actions(actionConfig);
+        this.calculations = new Calculations(calculationConfig);
 
-        this.keypressManager = new KeypressManager();
+        this.calculationManager = new CalculationManager(this.calculations);
         this.actionManager = new ActionManager(this.actions, this.layout);
 
         registerButtons.call(this);
@@ -29,7 +32,7 @@ export default class {
 
 function registerButtons(){
     for (let button of this.layout.buttons){
-        this.keypressManager.registerKeypress(button.$el);
-        this.actionManager.registerButton(button.$el);
+        this.calculationManager.registerButton(button);
+        this.actionManager.registerButton(button);
     }
 }

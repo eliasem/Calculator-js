@@ -1,12 +1,10 @@
 import Buttons from 'calculator/constant/Buttons';
 
 export default {
+    name: "standard",
     toolbar:{
-        title:{},
         buttons:[Buttons.HISTORY]
     },
-    expression:{},
-    answer: {},
     rows:[
         {
             buttons:[Buttons.MC, Buttons.MR, Buttons.M_PLUS, Buttons.M_MINUS, Buttons.MS, Buttons.M_STACK]

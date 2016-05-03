@@ -1,86 +1,43 @@
 import $ from 'jquery';
-import standard from '../config/standard';
+
+import Referencable from './behaviours/Referencable';
 import Resizer from './behaviours/Resizer';
-
-import Panel from './layout/Panel';
-
-let Mode = {
-    standard: standard
-};
+import buildLayout from './builder/layout';
 
 
-export default class {
-    constructor(options){
-        this.mode = 'standard';
-
+export default class Layout extends Referencable{
+    constructor(tokenManager, config){
+        super();
         this.buttons = [];
 
-        buildLayout.call(this);
+        createLayout.call(this, config);
 
         this.resizer = new Resizer(this);
+        this.tokenManager = tokenManager;
+
+        this.tokenManager.change(renderExpression, this);
+        this.tokenManager.change(renderAnswer, this);
+        this.tokenManager.evaluation(renderEvaluationAnswer, this);
+        renderAnswer.call(this);
     }
     resizeLayout(){
         this.resizer.start();
     }
-
-    getReference(referenceString){
-        let name = referenceString.substr(1);
-        if(this['$' + name]){
-            return this['$' + name];
-        }
-        return this[name];
-    }
 }
 
-
-function getConfig(mode){
-    return Mode[mode];
-}
-
-function buildLayout(){
-    let config = getConfig(this.mode);
-
+function createLayout(config){
     if(!config){ return; }
 
-    this.$el = $(`<div class="${this.mode}"></div>`);
+    buildLayout.call(this, config);
+}
 
-    this.$toolbar = $(`<div class="toolbar"></div>`);
-    this.$toolbar.append(`<div class="title">${this.mode}</div>`);
-    let $toolbarButtons = $(`<div class="buttons"></div>`);
+function renderExpression(){
+    this.$expressionArea.html(this.tokenManager.expressionStr);
+}
+function renderAnswer(){
+    this.$answer.html(this.tokenManager.answerStr);
+}
 
-    for(let button of config.toolbar.buttons){
-        $toolbarButtons.append(button.$el);
-        this.buttons.push(button);
-    }
-
-    this.$toolbar.append($toolbarButtons);
-
-    this.$el.append(this.$toolbar);
-
-    this.$output = $(`<div class="output"></div>`);
-    this.$expressionArea = $(`<div class="expressionArea"></div>`);
-    this.$answer = $(`<div class="answer"></div>`);
-
-    this.$output.append(this.$expressionArea);
-    this.$output.append(this.$answer);
-
-    this.$el.append(this.$output);
-
-    for(let row =0; row< config.rows.length;  row++ ){
-        let className = config.rows[row].className || "";
-        let $row = $(`<div class="row ${className}"></div>`);
-
-        for(let b in config.rows[row].buttons){
-            $row.append(config.rows[row].buttons[b].$el);
-            this.buttons.push(config.rows[row].buttons[b]);
-        }
-
-        this.$el.append($row);
-    }
-
-    this.memoryStack = new Panel({ className: "memoryStackPanel"});
-    this.history = new Panel({ className: "historyPanel"});
-
-    this.$el.append(this.memoryStack.$el);
-    this.$el.append(this.history.$el);
+function renderEvaluationAnswer(answer){
+    this.$answer.html(answer);
 }

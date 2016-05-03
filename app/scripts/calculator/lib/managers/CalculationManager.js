@@ -1,9 +1,9 @@
 import { objectEntries } from 'calculator/utils';
 
 export default class{
-    constructor(calculations){
+    constructor(calculations, tokenManager){
         this.calculations = calculations;
-        this.stack = [];
+        this.tokenManager = tokenManager;
     }
     registerButton(button){
         if(!button.calculations){ return; }
@@ -19,6 +19,6 @@ function onKeypress(button){
         let calculation = this.calculations.getCalculation(objectValue.calculationName);
         if(!calculation){ return; }
 
-        calculation.apply(calculation, [this, button]);
+        calculation.apply(calculation, [this.tokenManager, button]);
     }
 }

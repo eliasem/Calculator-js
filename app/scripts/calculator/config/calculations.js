@@ -1,5 +1,9 @@
-import AddToStack from '../lib/calculations/AddToStack';
+import AddNumberToken from '../lib/calculations/AddNumberToken';
+import AddArithmeticToken from '../lib/calculations/AddArithmeticToken';
+import Evaluate from '../lib/calculations/Evaluate';
 
 export default {
-    'AddToStack': AddToStack
+    'AddNumberToken': AddNumberToken,
+    'AddArithmeticToken': AddArithmeticToken,
+    'Evaluate': Evaluate
 };

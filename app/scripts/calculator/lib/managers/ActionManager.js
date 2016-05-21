@@ -1,25 +1,20 @@
+import { objectEntries } from 'calculator/utils';
+
 export default class {
     constructor(actions, layout){
         this.actions = actions;
         this.layout = layout;
     }
-    registerButton($button){
-        $button.on('keypress', function(e, button){
+    registerButton(button){
+        if(!button.actions){ return; }
+
+        button.$el.on('keypress', function(e, button){
             onKeypress.call(this, button);
         }.bind(this));
     }
 }
 
-function* objectEntries(obj) {
-    for (let key of Object.keys(obj)) {
-        yield [key, obj[key]];
-    }
-}
-
 function onKeypress(button){
-
-    if(!button.actions){ return; }
-
     for(let [objectName,objectValue] of objectEntries(button.actions)){
         let action = this.actions.getAction(objectValue.actionName);
         if(!action){ return; }

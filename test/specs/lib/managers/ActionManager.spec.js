@@ -1,7 +1,7 @@
 import $ from 'jquery';
 import sinon from 'sinon';
 
-import ActionManager from 'calculator/lib/math/ActionManager';
+import ActionManager from 'calculator/lib/managers/ActionManager';
 import Actions from 'calculator/lib/Actions';
 
 
@@ -41,7 +41,7 @@ describe ('Action Manager', () => {
                 let button = createButton();
                 delete button.actions;
 
-                underTest.registerButton(button.$el);
+                underTest.registerButton(button);
                 expect(() => { button.$el.trigger('keypress', button); } ).to.not.throw();
             });
         });
@@ -49,7 +49,7 @@ describe ('Action Manager', () => {
         describe('invalid action name', () => {
             it('should not error if the action name has not been set on first action', () => {
                 let button = createButton();
-                underTest.registerButton(button.$el);
+                underTest.registerButton(button);
                 expect(() => { button.$el.trigger('keypress', button); } ).to.not.throw();
             });
 
@@ -61,7 +61,7 @@ describe ('Action Manager', () => {
                 let reference = {};
                 layout.getReference.withArgs('&reference').returns(reference);
 
-                underTest.registerButton(button.$el);
+                underTest.registerButton(button);
 
                 expect(() => { button.$el.trigger('keypress', button); } ).to.not.throw();
 
@@ -82,7 +82,7 @@ describe ('Action Manager', () => {
                 let reference = {};
                 layout.getReference.withArgs('&reference').returns(reference);
 
-                underTest.registerButton(button.$el);
+                underTest.registerButton(button);
 
                 button.$el.trigger('keypress', button);
 
@@ -100,7 +100,7 @@ describe ('Action Manager', () => {
                 let reference = {};
                 layout.getReference.withArgs('&reference').returns(reference);
 
-                underTest.registerButton(button.$el);
+                underTest.registerButton(button);
 
                 button.$el.trigger('keypress', button);
 

@@ -19,70 +19,90 @@ export default {
     'PERCENT' : { 'html': '%', 'class': 'percent' },
     'SQRT' : { 'html': '&radic;', 'class': 'sqrt' },
     'SQUARED' : { 'html': '<span class="math">x</span><sup>2</sup>', 'class': 'squared' },
-    'FRAC' : { 'html': '1/<span class="math">x</span>', 'class': 'frac' },
+    'FRAC' : { 'html': '<sup>1</sup>/<span class="math">x</span>', 'class': 'frac' },
     'CE' : { 'html': 'CE', 'class': 'ce' },
     'C' : { 'html': 'C', 'class': 'c' },
     'BACKSPACE' : { 'html': '<span class="icon icon-backspace">', 'class': 'backspace' },
-    'DIVIDE' : { 'html': '&divide;', 'class': 'divide' },
-    'SEVEN' : { 'html': '7', 'class': 'number-7',
-        actions: {
-            'print': { actionName: 'PrintToScreen', actionArgs: ["&answer", "7"] }
+    'DIVIDE' : { 'html': '&divide;', 'class': 'divide', 'mathSymbol': '&divide;',
+        calculations: {
+            'add': { calculationName: 'AddArithmeticToken' }
         }
     },
-    'EIGHT' : { 'html': '8', 'class': 'number-8',
-        actions: {
-            'print': { actionName: 'PrintToScreen', actionArgs: ["&answer", "8"] }
+    'SEVEN' : { 'html': '7', 'class': 'number-7', 'mathSymbol': '7',
+        calculations: {
+            'add': { calculationName: 'AddNumberToken' }
         }
     },
-    'NINE' : { 'html': '9', 'class': 'number-9',
-        actions: {
-            'print': { actionName: 'PrintToScreen', actionArgs: ["&answer", "9"] }
+    'EIGHT' : { 'html': '8', 'class': 'number-8', 'mathSymbol': '8',
+        calculations: {
+            'add': { calculationName: 'AddNumberToken' }
         }
     },
-    'TIMES' : { 'html': '&times;', 'class': 'times' },
-    'FOUR' : { 'html': '4', 'class': 'number-4',
-        actions: {
-            'print': { actionName: 'PrintToScreen', actionArgs: ["&answer", "4"] }
+    'NINE' : { 'html': '9', 'class': 'number-9', 'mathSymbol': '9',
+        calculations: {
+            'add': { calculationName: 'AddNumberToken' }
         }
     },
-    'FIVE' : { 'html': '5', 'class': 'number-5',
-        actions: {
-            'print': { actionName: 'PrintToScreen', actionArgs: ["&answer", "5"] }
+    'TIMES' : { 'html': '&times;', 'class': 'times', 'mathSymbol': '&times;',
+        calculations: {
+            'add': { calculationName: 'AddArithmeticToken' }
         }
     },
-    'SIX' : { 'html': '6', 'class': 'number-6',
-        actions: {
-            'print': { actionName: 'PrintToScreen', actionArgs: ["&answer", "6"] }
+    'FOUR' : { 'html': '4', 'class': 'number-4', 'mathSymbol': '4',
+        calculations: {
+            'add': { calculationName: 'AddNumberToken' }
         }
     },
-    'MINUS' : { 'html': '-', 'class': 'minus' },
-    'ONE' : { 'html': '1', 'class': 'number-1',
-        actions: {
-            'print': { actionName: 'PrintToScreen', actionArgs: ["&answer", "1"] }
+    'FIVE' : { 'html': '5', 'class': 'number-5', 'mathSymbol': '5',
+        calculations: {
+            'add': { calculationName: 'AddNumberToken' }
         }
     },
-    'TWO' : { 'html': '2', 'class': 'number-2',
-        actions: {
-            'print': { actionName: 'PrintToScreen', actionArgs: ["&answer", "2"] }
+    'SIX' : { 'html': '6', 'class': 'number-6', 'mathSymbol': '6',
+        calculations: {
+            'add': { calculationName: 'AddNumberToken' }
         }
     },
-    'THREE' : { 'html': '3', 'class': 'number-3',
-        actions: {
-            'print': { actionName: 'PrintToScreen', actionArgs: ["&answer", "3"] }
+    'MINUS' : { 'html': '-', 'class': 'minus', 'mathSymbol': '-',
+        calculations: {
+            'add': { calculationName: 'AddArithmeticToken' }
         }
     },
-    'PLUS' : { 'html': '+', 'class': 'plus' },
+    'ONE' : { 'html': '1', 'class': 'number-1', 'mathSymbol': '1',
+        calculations: {
+            'add': { calculationName: 'AddNumberToken' }
+        }
+    },
+    'TWO' : { 'html': '2', 'class': 'number-2', 'mathSymbol': '2',
+        calculations: {
+            'add': { calculationName: 'AddNumberToken' }
+        }
+    },
+    'THREE' : { 'html': '3', 'class': 'number-3', 'mathSymbol': '3',
+        calculations: {
+            'add': { calculationName: 'AddNumberToken' }
+        }
+    },
+    'PLUS' : { 'html': '+', 'class': 'plus', 'mathSymbol': '+',
+        calculations: {
+            'add': { calculationName: 'AddArithmeticToken' }
+        }
+    },
     'PLUS_MINUS' : { 'html': '&plusmn;', 'class': 'plus-minus' },
-    'ZERO' : { 'html': '0', 'class': 'number-0',
-        actions: {
-            'print': { actionName: 'PrintToScreen', actionArgs: ["&answer", "0"] }
+    'ZERO' : { 'html': '0', 'class': 'number-0', 'mathSymbol': '0',
+        calculations: {
+            'add': { calculationName: 'AddNumberToken' }
         }
     },
-    'DECIMAL' : { 'html': '.', 'class': 'decimal',
-        actions: {
-            'print': { actionName: 'PrintToScreen', actionArgs: ["&answer", "."] }
+    'DECIMAL' : { 'html': '.', 'class': 'decimal', 'mathSymbol': '.',
+        calculations: {
+            'add': { calculationName: 'AddNumberToken' }
         }
     },
-    'EQUAL' : { 'html': '=', 'class': 'equal' }
+    'EQUAL' : { 'html': '=', 'class': 'equal',
+        calculations: {
+            'evaluate': { calculationName: 'Evaluate' }
+        }
+    }
 };
 

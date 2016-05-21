@@ -5,7 +5,9 @@ class Button {
         this.id = id;
         this.html = config.html;
         this.class = config.class;
+        this.mathSymbol = config.mathSymbol;
         this.actions = config.actions;
+        this.calculations = config.calculations;
 
         this.$el = $(`<div class="calc-button ${this.class}">${this.html}</div>`);
 

@@ -5,7 +5,8 @@
         "jquery": "~2",
         "requirejs": "~2",
         "requirejs-text": "~2",
-        "babelPolyfill": "https://github.com/raptor9g/babelPolyfill.git#v6.3.14"
+        "babelPolyfill": "https://github.com/raptor9g/babelPolyfill.git#v6.3.14",
+        "mathjs": "~3"
     },
     "devDependencies": {
         "almond": "~0.3",

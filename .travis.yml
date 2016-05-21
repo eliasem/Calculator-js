@@ -3,7 +3,7 @@ node_js:
   - "node"
 before_install:
   - npm install -g grunt-cli
-  - npm install -g phantomjs
+  - npm install -g phantomjs@1.9.20
   - npm install -g bower
 install:
   - npm install

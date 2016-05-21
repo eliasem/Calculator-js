@@ -44,4 +44,22 @@ describe('Add Number Token', () => {
         expect(tokenManager.push.getCall(0).args[1].replace).to.equal(true);
     });
 
+    it('should not add more than one .', () => {
+        tokenManager.answerStr = "1.0";
+        button.mathSymbol = ".";
+
+        underTest = new AddNumberToken(tokenManager, button);
+
+        expect(tokenManager.push.called).to.equal(false);
+    });
+
+    it('should not remove 0 if the . is the first button pressed', () => {
+        tokenManager.answerStr = "0";
+        button.mathSymbol = ".";
+
+        underTest = new AddNumberToken(tokenManager, button);
+
+        expect(tokenManager.push.getCall(0).args[1].replace).to.equal(false);
+    });
+
 });

@@ -2,9 +2,14 @@ import TokenManagerState from 'calculator/constant/TokenManagerStates';
 
 export default (tokenManager, button) => {
 
-    if(tokenManager.answerStr === "0" && button.mathSymbol === '0'){ return; }
+    let mathSymbol = button.mathSymbol;
+    let removeZero = true;
 
-    tokenManager.push(button.mathSymbol, {
-        replace: tokenManager.answerStr === "0" || tokenManager.state === TokenManagerState.EVALUATED
+    if(tokenManager.answerStr === "0" && button.mathSymbol === '0'){ return; }
+    if(tokenManager.answerStr.indexOf('.') !== -1 && button.mathSymbol === '.'){ return; }
+    if(tokenManager.answerStr === "0" && button.mathSymbol === '.'){ removeZero = false; }
+
+    tokenManager.push(mathSymbol, {
+        replace: (tokenManager.answerStr === "0" && removeZero) || tokenManager.state === TokenManagerState.EVALUATED
     });
 };

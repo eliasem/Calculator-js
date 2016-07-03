@@ -109,12 +109,12 @@ describe('Token Manager', () => {
                 underTest.push("1");
                 underTest.push("2", {replace: true});
 
-                expect(underTest.tokens).to.eql([0, "2"]);
+                expect(underTest.tokens).to.eql(["0", "2"]);
             });
 
             it('should push token to tokens', () => {
                 underTest.push("1");
-                expect(underTest.tokens).to.eql([0, "1"]);
+                expect(underTest.tokens).to.eql(["0", "1"]);
             });
 
         });
@@ -143,6 +143,83 @@ describe('Token Manager', () => {
                 underTest.evaluate();
                 expect(underTest.tokens).to.eql([12]);
             });
+        });
+    });
+
+    describe("clearing", () => {
+        it("clear the stack", () => {
+            underTest.push("10", {replace:true});
+            underTest.push("+");
+            underTest.push("40");
+
+            underTest.clear();
+
+            expect(underTest.tokens).to.eql(["0"]);
+        });
+
+        it('should just append 0', () => {
+            underTest.push("10", {replace:true});
+            underTest.push("+");
+
+            underTest.clear(true);
+
+            expect(underTest.tokens).to.eql(["10", "+", "0"]);
+        });
+
+        it('should just clear the last number', () => {
+            underTest.push("1", {replace:true});
+            underTest.push("0");
+            underTest.push("+");
+            underTest.push("5");
+            underTest.push("0");
+
+            underTest.clear(true);
+
+            expect(underTest.tokens).to.eql(["1", "0", "+", "0"]);
+        });
+
+        it('should not keep appending 0', () => {
+            underTest.push("1", {replace:true});
+            underTest.push("0");
+            underTest.push("+");
+            underTest.push("5");
+            underTest.push("0");
+
+            underTest.clear(true);
+            underTest.clear(true);
+
+            expect(underTest.tokens).to.eql(["1", "0", "+", "0"]);
+        });
+    });
+
+    describe("backspace", () => {
+
+        it("should add 0 if pressed atleast once", () => {
+            underTest.push("9", {replace:true});
+            underTest.backspace();
+
+            expect(underTest.tokens).to.eql(["0"]);
+        });
+
+        it('should go up to the last operator', () => {
+            underTest.push("9", {replace:true});
+            underTest.push("+");
+            underTest.push("1");
+            underTest.backspace();
+
+            expect(underTest.tokens).to.eql(["9", "+", "0"]);
+        });
+
+        it('should not go past last operator', () => {
+            underTest.push("9", {replace:true});
+            underTest.push("+");
+            underTest.push("1");
+            underTest.backspace();
+            underTest.backspace();
+            underTest.backspace();
+            underTest.backspace();
+
+            expect(underTest.tokens).to.eql(["9", "+", "0"]);
         });
     });
 

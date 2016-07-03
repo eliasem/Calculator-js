@@ -20,9 +20,21 @@ export default {
     'SQRT' : { 'html': '&radic;', 'class': 'sqrt' },
     'SQUARED' : { 'html': '<span class="math">x</span><sup>2</sup>', 'class': 'squared' },
     'FRAC' : { 'html': '<sup>1</sup>/<span class="math">x</span>', 'class': 'frac' },
-    'CE' : { 'html': 'CE', 'class': 'ce' },
-    'C' : { 'html': 'C', 'class': 'c' },
-    'BACKSPACE' : { 'html': '<span class="icon icon-backspace">', 'class': 'backspace' },
+    'CE' : { 'html': 'CE', 'class': 'ce',
+        calculations: {
+            'clear': { calculationName: 'ClearLastTokens' }
+        }
+    },
+    'C' : { 'html': 'C', 'class': 'c',
+        calculations: {
+            'clear': { calculationName: 'ClearTokens' }
+        }
+    },
+    'BACKSPACE' : { 'html': '<span class="icon icon-backspace">', 'class': 'backspace',
+        calculations: {
+            'backspace': { calculationName: 'Backspace' }
+        }
+    },
     'DIVIDE' : { 'html': '&divide;', 'class': 'divide', 'mathSymbol': '&divide;',
         calculations: {
             'add': { calculationName: 'AddArithmeticToken' }

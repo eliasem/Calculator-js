@@ -7,7 +7,7 @@ export default class {
     constructor(){
         this._eventApi = new EventApi();
 
-        this.tokens = [0];
+        this.tokens = ["0"];
         this.state = TokenManagerState.NORMAL;
 
         createAccessors.call(this);
@@ -58,6 +58,33 @@ export default class {
         }
 
         return false;
+    }
+
+    clear(last){
+        if(!last){
+            this.tokens.splice(0);
+        }
+        else{
+            let lastOperatorIndex = getLastOperatorIndex.call(this);
+            this.tokens.splice(lastOperatorIndex+1, this.tokens.length);
+        }
+
+        this.tokens.push("0");
+
+        this.trigger(TokenManagerEvent.CHANGE);
+    }
+
+    backspace(){
+        let lastOperatorIndex = getLastOperatorIndex.call(this);
+        if(lastOperatorIndex === this.tokens.length - 1){ return; }
+
+        this.tokens.splice(-1);
+
+        if(lastOperatorIndex === this.tokens.length - 1  || !this.tokens.length){
+            this.tokens.push("0");
+        }
+
+        this.trigger(TokenManagerEvent.CHANGE);
     }
 }
 

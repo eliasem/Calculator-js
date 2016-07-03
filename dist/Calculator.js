@@ -10525,7 +10525,48 @@ define('calculator/lib/calculations/Evaluate',["exports"], function (exports) {
 });
 //# sourceMappingURL=Evaluate.js.map
 ;
-define('calculator/config/calculations',['exports', '../lib/calculations/AddNumberToken', '../lib/calculations/AddArithmeticToken', '../lib/calculations/Evaluate'], function (exports, _AddNumberToken, _AddArithmeticToken, _Evaluate) {
+define('calculator/lib/calculations/ClearTokens',["exports"], function (exports) {
+    "use strict";
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+
+    exports.default = function (tokenManager, button) {
+
+        tokenManager.clear();
+    };
+});
+//# sourceMappingURL=ClearTokens.js.map
+;
+define('calculator/lib/calculations/ClearLastTokens',["exports"], function (exports) {
+    "use strict";
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+
+    exports.default = function (tokenManager, button) {
+
+        tokenManager.clear(true);
+    };
+});
+//# sourceMappingURL=ClearLastTokens.js.map
+;
+define('calculator/lib/calculations/Backspace',["exports"], function (exports) {
+    "use strict";
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+
+    exports.default = function (tokenManager, button) {
+        tokenManager.backspace();
+    };
+});
+//# sourceMappingURL=Backspace.js.map
+;
+define('calculator/config/calculations',['exports', '../lib/calculations/AddNumberToken', '../lib/calculations/AddArithmeticToken', '../lib/calculations/Evaluate', '../lib/calculations/ClearTokens', '../lib/calculations/ClearLastTokens', '../lib/calculations/Backspace'], function (exports, _AddNumberToken, _AddArithmeticToken, _Evaluate, _ClearTokens, _ClearLastTokens, _Backspace) {
     'use strict';
 
     Object.defineProperty(exports, "__esModule", {
@@ -10538,6 +10579,12 @@ define('calculator/config/calculations',['exports', '../lib/calculations/AddNumb
 
     var _Evaluate2 = _interopRequireDefault(_Evaluate);
 
+    var _ClearTokens2 = _interopRequireDefault(_ClearTokens);
+
+    var _ClearLastTokens2 = _interopRequireDefault(_ClearLastTokens);
+
+    var _Backspace2 = _interopRequireDefault(_Backspace);
+
     function _interopRequireDefault(obj) {
         return obj && obj.__esModule ? obj : {
             default: obj
@@ -10547,7 +10594,10 @@ define('calculator/config/calculations',['exports', '../lib/calculations/AddNumb
     exports.default = {
         'AddNumberToken': _AddNumberToken2.default,
         'AddArithmeticToken': _AddArithmeticToken2.default,
-        'Evaluate': _Evaluate2.default
+        'Evaluate': _Evaluate2.default,
+        'ClearTokens': _ClearTokens2.default,
+        'ClearLastTokens': _ClearLastTokens2.default,
+        'Backspace': _Backspace2.default
     };
 });
 //# sourceMappingURL=calculations.js.map
@@ -11591,7 +11641,7 @@ define('calculator/lib/managers/TokenManager',['exports', 'calculator/math', 'ca
 
             this._eventApi = new _EventApi2.default();
 
-            this.tokens = [0];
+            this.tokens = ["0"];
             this.state = _TokenManagerStates2.default.NORMAL;
 
             createAccessors.call(this);
@@ -11653,6 +11703,36 @@ define('calculator/lib/managers/TokenManager',['exports', 'calculator/math', 'ca
                 }
 
                 return false;
+            }
+        }, {
+            key: 'clear',
+            value: function clear(last) {
+                if (!last) {
+                    this.tokens.splice(0);
+                } else {
+                    var lastOperatorIndex = getLastOperatorIndex.call(this);
+                    this.tokens.splice(lastOperatorIndex + 1, this.tokens.length);
+                }
+
+                this.tokens.push("0");
+
+                this.trigger(_TokenManagerEvents2.default.CHANGE);
+            }
+        }, {
+            key: 'backspace',
+            value: function backspace() {
+                var lastOperatorIndex = getLastOperatorIndex.call(this);
+                if (lastOperatorIndex === this.tokens.length - 1) {
+                    return;
+                }
+
+                this.tokens.splice(-1);
+
+                if (lastOperatorIndex === this.tokens.length - 1 || !this.tokens.length) {
+                    this.tokens.push("0");
+                }
+
+                this.trigger(_TokenManagerEvents2.default.CHANGE);
             }
         }]);
 
@@ -11734,9 +11814,21 @@ define('calculator/config/buttons',['exports'], function (exports) {
         'SQRT': { 'html': '&radic;', 'class': 'sqrt' },
         'SQUARED': { 'html': '<span class="math">x</span><sup>2</sup>', 'class': 'squared' },
         'FRAC': { 'html': '<sup>1</sup>/<span class="math">x</span>', 'class': 'frac' },
-        'CE': { 'html': 'CE', 'class': 'ce' },
-        'C': { 'html': 'C', 'class': 'c' },
-        'BACKSPACE': { 'html': '<span class="icon icon-backspace">', 'class': 'backspace' },
+        'CE': { 'html': 'CE', 'class': 'ce',
+            calculations: {
+                'clear': { calculationName: 'ClearLastTokens' }
+            }
+        },
+        'C': { 'html': 'C', 'class': 'c',
+            calculations: {
+                'clear': { calculationName: 'ClearTokens' }
+            }
+        },
+        'BACKSPACE': { 'html': '<span class="icon icon-backspace">', 'class': 'backspace',
+            calculations: {
+                'backspace': { calculationName: 'Backspace' }
+            }
+        },
         'DIVIDE': { 'html': '&divide;', 'class': 'divide', 'mathSymbol': '&divide;',
             calculations: {
                 'add': { calculationName: 'AddArithmeticToken' }

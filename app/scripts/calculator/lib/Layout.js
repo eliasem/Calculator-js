@@ -6,7 +6,7 @@ import buildLayout from './builder/layout';
 
 
 export default class Layout extends Referencable{
-    constructor(tokenManager, config){
+    constructor(tokenManager, historyManager, config){
         super();
         this.buttons = [];
 
@@ -14,6 +14,7 @@ export default class Layout extends Referencable{
 
         this.resizer = new Resizer(this);
         this.tokenManager = tokenManager;
+        this.historyManager = historyManager;
 
         this.tokenManager.change(renderExpression, this);
         this.tokenManager.change(renderAnswer, this);

@@ -12,6 +12,7 @@ import Layout from 'calculator/lib/Layout';
 import CalculationManager from 'calculator/lib/managers/CalculationManager';
 import ActionManager from 'calculator/lib/managers/ActionManager';
 import TokenManager from 'calculator/lib/managers/TokenManager';
+import HistoryManager from 'calculator/lib/managers/HistoryManager';
 
 import standard from 'calculator/config/standard';
 
@@ -20,7 +21,8 @@ export default class {
         this.$el = $("<div class='calculator'>");
 
         this.tokenManager = new TokenManager();
-        this.layout = new Layout(this.tokenManager, standard);
+        this.historyManager = new HistoryManager(this.tokenManager);
+        this.layout = new Layout(this.tokenManager, this.historyManager, standard);
 
         this.actions = new Actions(actionConfig);
         this.calculations = new Calculations(calculationConfig);

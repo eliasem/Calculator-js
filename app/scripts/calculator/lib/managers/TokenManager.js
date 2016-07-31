@@ -21,8 +21,8 @@ export default class {
         this._eventApi.on(TokenManagerEvent.EVALUATION, funct, context);
     }
 
-    trigger(eventName){
-        let arg = eventName === TokenManagerEvent.EVALUATION ? evaluateTokens(this.tokens) : null;
+    trigger(eventName, arg){
+        arg = eventName === TokenManagerEvent.EVALUATION ? evaluateTokens(this.tokens) : arg;
 
         this._eventApi.trigger(eventName, arg);
     }
@@ -42,10 +42,11 @@ export default class {
         this.state = TokenManagerState.EVALUATED;
 
         let value = evaluateTokens(this.tokens);
+        let tokens = this.tokens.slice(0);
         this.tokens.splice(0);
 
         this.tokens.push(value);
-        this.trigger(TokenManagerEvent.CHANGE);
+        this.trigger(TokenManagerEvent.CHANGE, tokens);
     }
 
     isLastToken(tokens){

@@ -51,6 +51,18 @@ describe('Token Manager', () => {
 
             expect(evaluationCallback.getCall(0).args[0]).to.equal(9);
         });
+
+        it('should receive correct argument when change is triggered', () => {
+            let changeCallback = sinon.stub();
+
+            underTest.change(changeCallback);
+
+            underTest.tokens = ['5','+','4'];
+
+            underTest.trigger('change', 'arg');
+
+            expect(changeCallback.getCall(0).args[0]).to.equal('arg');
+        });
     });
 
     describe("accessors", () => {

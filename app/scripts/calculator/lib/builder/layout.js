@@ -1,5 +1,6 @@
 import $ from 'jquery';
 import Panel from './Panel';
+import HistoryPanel from './HistoryPanel';
 
 export default function(config){
     this.$el = $(`<div class="${config.name}"></div>`);
@@ -39,7 +40,7 @@ export default function(config){
     }
 
     this.memoryStack = new Panel({ className: "memoryStackPanel"});
-    this.history = new Panel({ className: "historyPanel"});
+    this.history = new HistoryPanel(this.historyManager, { className: "historyPanel"});
 
     this.$el.append(this.memoryStack.$el);
     this.$el.append(this.history.$el);

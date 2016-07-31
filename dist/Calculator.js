@@ -10781,7 +10781,71 @@ define('calculator/lib/builder/Panel',['exports', 'jquery'], function (exports, 
 });
 //# sourceMappingURL=Panel.js.map
 ;
-define('calculator/lib/builder/layout',['exports', 'jquery', './Panel'], function (exports, _jquery, _Panel) {
+define('calculator/lib/builder/HistoryPanel',['exports', './Panel'], function (exports, _Panel2) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+
+    var _Panel3 = _interopRequireDefault(_Panel2);
+
+    function _interopRequireDefault(obj) {
+        return obj && obj.__esModule ? obj : {
+            default: obj
+        };
+    }
+
+    function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+            throw new TypeError("Cannot call a class as a function");
+        }
+    }
+
+    function _possibleConstructorReturn(self, call) {
+        if (!self) {
+            throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+        }
+
+        return call && (typeof call === "object" || typeof call === "function") ? call : self;
+    }
+
+    function _inherits(subClass, superClass) {
+        if (typeof superClass !== "function" && superClass !== null) {
+            throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
+        }
+
+        subClass.prototype = Object.create(superClass && superClass.prototype, {
+            constructor: {
+                value: subClass,
+                enumerable: false,
+                writable: true,
+                configurable: true
+            }
+        });
+        if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+    }
+
+    var _class = function (_Panel) {
+        _inherits(_class, _Panel);
+
+        function _class(historyManager, options) {
+            _classCallCheck(this, _class);
+
+            var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(_class).call(this, options));
+
+            _this.historyManager = historyManager;
+            return _this;
+        }
+
+        return _class;
+    }(_Panel3.default);
+
+    exports.default = _class;
+});
+//# sourceMappingURL=HistoryPanel.js.map
+;
+define('calculator/lib/builder/layout',['exports', 'jquery', './Panel', './HistoryPanel'], function (exports, _jquery, _Panel, _HistoryPanel) {
     'use strict';
 
     Object.defineProperty(exports, "__esModule", {
@@ -10847,7 +10911,7 @@ define('calculator/lib/builder/layout',['exports', 'jquery', './Panel'], functio
         }
 
         this.memoryStack = new _Panel2.default({ className: "memoryStackPanel" });
-        this.history = new _Panel2.default({ className: "historyPanel" });
+        this.history = new _HistoryPanel2.default(this.historyManager, { className: "historyPanel" });
 
         this.$el.append(this.memoryStack.$el);
         this.$el.append(this.history.$el);
@@ -10856,6 +10920,8 @@ define('calculator/lib/builder/layout',['exports', 'jquery', './Panel'], functio
     var _jquery2 = _interopRequireDefault(_jquery);
 
     var _Panel2 = _interopRequireDefault(_Panel);
+
+    var _HistoryPanel2 = _interopRequireDefault(_HistoryPanel);
 
     function _interopRequireDefault(obj) {
         return obj && obj.__esModule ? obj : {
@@ -10937,7 +11003,7 @@ define('calculator/lib/Layout',['exports', 'jquery', './behaviours/Referencable'
     var Layout = function (_Referencable) {
         _inherits(Layout, _Referencable);
 
-        function Layout(tokenManager, config) {
+        function Layout(tokenManager, historyManager, config) {
             _classCallCheck(this, Layout);
 
             var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Layout).call(this));
@@ -10948,6 +11014,7 @@ define('calculator/lib/Layout',['exports', 'jquery', './behaviours/Referencable'
 
             _this.resizer = new _Resizer2.default(_this);
             _this.tokenManager = tokenManager;
+            _this.historyManager = historyManager;
 
             _this.tokenManager.change(renderExpression, _this);
             _this.tokenManager.change(renderAnswer, _this);
@@ -11659,8 +11726,8 @@ define('calculator/lib/managers/TokenManager',['exports', 'calculator/math', 'ca
             }
         }, {
             key: 'trigger',
-            value: function trigger(eventName) {
-                var arg = eventName === _TokenManagerEvents2.default.EVALUATION ? (0, _math.evaluateTokens)(this.tokens) : null;
+            value: function trigger(eventName, arg) {
+                arg = eventName === _TokenManagerEvents2.default.EVALUATION ? (0, _math.evaluateTokens)(this.tokens) : arg;
 
                 this._eventApi.trigger(eventName, arg);
             }
@@ -11684,10 +11751,11 @@ define('calculator/lib/managers/TokenManager',['exports', 'calculator/math', 'ca
                 this.state = _TokenManagerStates2.default.EVALUATED;
 
                 var value = (0, _math.evaluateTokens)(this.tokens);
+                var tokens = this.tokens.slice(0);
                 this.tokens.splice(0);
 
                 this.tokens.push(value);
-                this.trigger(_TokenManagerEvents2.default.CHANGE);
+                this.trigger(_TokenManagerEvents2.default.CHANGE, tokens);
             }
         }, {
             key: 'isLastToken',
@@ -11787,6 +11855,74 @@ define('calculator/lib/managers/TokenManager',['exports', 'calculator/math', 'ca
     }
 });
 //# sourceMappingURL=TokenManager.js.map
+;
+define('calculator/lib/model/History',["exports"], function (exports) {
+    "use strict";
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+
+    function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+            throw new TypeError("Cannot call a class as a function");
+        }
+    }
+
+    var _class = function _class(tokens, answer) {
+        _classCallCheck(this, _class);
+
+        this.tokens = tokens;
+        this.answer = answer;
+    };
+
+    exports.default = _class;
+});
+//# sourceMappingURL=History.js.map
+;
+define('calculator/lib/managers/HistoryManager',['exports', 'calculator/constant/TokenManagerStates', 'calculator/lib/model/History'], function (exports, _TokenManagerStates, _History) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+
+    var _TokenManagerStates2 = _interopRequireDefault(_TokenManagerStates);
+
+    var _History2 = _interopRequireDefault(_History);
+
+    function _interopRequireDefault(obj) {
+        return obj && obj.__esModule ? obj : {
+            default: obj
+        };
+    }
+
+    function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+            throw new TypeError("Cannot call a class as a function");
+        }
+    }
+
+    var _class = function _class(tokenManager) {
+        _classCallCheck(this, _class);
+
+        this.historyStates = [];
+
+        this.tokenManager = tokenManager;
+        this.tokenManager.change(onChange, this);
+    };
+
+    exports.default = _class;
+
+
+    function onChange(tokens) {
+        if (this.tokenManager.state !== _TokenManagerStates2.default.EVALUATED) {
+            return;
+        }
+        this.historyStates.push(new _History2.default(tokens, this.tokenManager.answerStr));
+    }
+});
+//# sourceMappingURL=HistoryManager.js.map
 ;
 define('calculator/config/buttons',['exports'], function (exports) {
     'use strict';
@@ -16551,7 +16687,7 @@ process.umask = function() { return 0; };
 
 define("babelPolyfill", function(){});
 
-define('main',['exports', 'jquery', 'calculator/lib/Actions', 'calculator/lib/Calculations', 'calculator/config/actions', 'calculator/config/calculations', 'calculator/lib/Layout', 'calculator/lib/managers/CalculationManager', 'calculator/lib/managers/ActionManager', 'calculator/lib/managers/TokenManager', 'calculator/config/standard', 'babelPolyfill'], function (exports, _jquery, _Actions, _Calculations, _actions, _calculations, _Layout, _CalculationManager, _ActionManager, _TokenManager, _standard) {
+define('main',['exports', 'jquery', 'calculator/lib/Actions', 'calculator/lib/Calculations', 'calculator/config/actions', 'calculator/config/calculations', 'calculator/lib/Layout', 'calculator/lib/managers/CalculationManager', 'calculator/lib/managers/ActionManager', 'calculator/lib/managers/TokenManager', 'calculator/lib/managers/HistoryManager', 'calculator/config/standard', 'babelPolyfill'], function (exports, _jquery, _Actions, _Calculations, _actions, _calculations, _Layout, _CalculationManager, _ActionManager, _TokenManager, _HistoryManager, _standard) {
         'use strict';
 
         Object.defineProperty(exports, "__esModule", {
@@ -16576,6 +16712,8 @@ define('main',['exports', 'jquery', 'calculator/lib/Actions', 'calculator/lib/Ca
 
         var _TokenManager2 = _interopRequireDefault(_TokenManager);
 
+        var _HistoryManager2 = _interopRequireDefault(_HistoryManager);
+
         var _standard2 = _interopRequireDefault(_standard);
 
         function _interopRequireDefault(obj) {
@@ -16596,7 +16734,8 @@ define('main',['exports', 'jquery', 'calculator/lib/Actions', 'calculator/lib/Ca
                 this.$el = (0, _jquery2.default)("<div class='calculator'>");
 
                 this.tokenManager = new _TokenManager2.default();
-                this.layout = new _Layout2.default(this.tokenManager, _standard2.default);
+                this.historyManager = new _HistoryManager2.default(this.tokenManager);
+                this.layout = new _Layout2.default(this.tokenManager, this.historyManager, _standard2.default);
 
                 this.actions = new _Actions2.default(_actions2.default);
                 this.calculations = new _Calculations2.default(_calculations2.default);

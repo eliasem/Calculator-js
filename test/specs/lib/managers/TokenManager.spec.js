@@ -159,6 +159,15 @@ describe('Token Manager', () => {
     });
 
     describe("clearing", () => {
+        it('should set the state to normal', () => {
+            underTest.state = TokenManagerState.EVALUATED;
+            underTest.push("10", {replace:true});
+
+            underTest.clear();
+
+            expect(underTest.state).to.equal(TokenManagerState.NORMAL);
+        });
+
         it("clear the stack", () => {
             underTest.push("10", {replace:true});
             underTest.push("+");

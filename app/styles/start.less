@@ -19,10 +19,10 @@ body { margin: 0; }
         }
     }
 }
-.output { height: 10vh; min-height: 60px; padding: 0 15px;
+.output { height: 10vh; min-height: 85px; padding: 0 15px;
     .expressionArea, .answer { text-align: right; padding-right: 15px; }
     .expressionArea { font-size: 1.25em; min-height: 1.25em; }
-    .answer { font-size: 2.5em; }
+    .answer { font-size: 3.5em; font-weight: bold; }
 }
 
 .calc-button { display:inline-block; padding:15px; text-align: center; width: 100%; height: 100%; box-sizing: border-box; vertical-align: middle;
@@ -46,7 +46,26 @@ body { margin: 0; }
 }
 
 .panel{ position: absolute; width:100%; height: 100%; top: 0;
-    .innerPanel { position: absolute; width: 100%; background: #eeeeee; bottom:0; }
+    .innerPanel { position: absolute; width: 100%; background: #eeeeee; bottom:3px; }
+
+    &.historyPanel {
+        .content { width: 100%; height: 100%;
+            .scroll { width: 100%; height: ~"calc(100% - 50px)"; max-height: ~"calc(100% - 50px)"; overflow: auto;
+                .history-state { text-align: right; margin: 10px 0px; padding-right: 20px;
+                    &:hover { background: #dddddd; }
+                    .top, .bottom { padding-top: 10px; }
+                    .top { font-size: 1.25em; }
+                    .bottom { font-size: 2.5em; }
+                }
+            }
+            .footer { width: 100%; height: 50px; text-align: right;
+                .trash { display: inline-block; position:relative; height: 100%; width:50px; font-size: 22px;
+                    &:hover { background: #dddddd; }
+                    .icon { position: absolute; width: 22px; height: 22px; top: 0; bottom: 0; left: 0; right: 0; margin: auto; }
+                }
+            }
+        }
+    }
 }
 
 .math{ font-family: 'Redressed', cursive; }

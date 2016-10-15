@@ -1,11 +1,13 @@
-import {evaluateTokens} from 'calculator/math';
+import {evaluateTokens, toString} from 'calculator/token';
 import TokenManagerState from 'calculator/constant/TokenManagerStates';
 import TokenManagerEvent from 'calculator/constant/TokenManagerEvents';
 import EventApi from 'calculator/lib/event/EventApi';
 
+let eventApi = Symbol("eventApi");
+
 export default class {
     constructor(){
-        this._eventApi = new EventApi();
+        this[eventApi] = new EventApi();
 
         this.tokens = ["0"];
         this.state = TokenManagerState.NORMAL;
@@ -14,17 +16,17 @@ export default class {
     }
 
     change(funct, context){
-        this._eventApi.on(TokenManagerEvent.CHANGE, funct, context);
+        this[eventApi].on(TokenManagerEvent.CHANGE, funct, context);
     }
 
     evaluation(funct, context){
-        this._eventApi.on(TokenManagerEvent.EVALUATION, funct, context);
+        this[eventApi].on(TokenManagerEvent.EVALUATION, funct, context);
     }
 
     trigger(eventName, arg){
         arg = eventName === TokenManagerEvent.EVALUATION ? evaluateTokens(this.tokens) : arg;
 
-        this._eventApi.trigger(eventName, arg);
+        this[eventApi].trigger(eventName, arg);
     }
 
     push(value, options){
@@ -62,6 +64,7 @@ export default class {
     }
 
     clear(last){
+        this.state = TokenManagerState.NORMAL;
         if(!last){
             this.tokens.splice(0);
         }
@@ -116,17 +119,3 @@ function getLastOperatorIndex(){
     return operatorIndex;
 }
 
-function toString (tokens){
-    let s = "";
-
-    for(let t = 0; t < tokens.length; ++t){
-        if(tokens[t] === '+' || tokens[t] === '-' || tokens[t] === '&times;' || tokens[t] === '&divide;'){
-            s += ` ${tokens[t]} `;
-            continue;
-        }
-
-        s += tokens[t];
-    }
-
-    return s;
-}

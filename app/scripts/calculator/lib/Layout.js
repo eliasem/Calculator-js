@@ -9,12 +9,12 @@ export default class Layout extends Referencable{
     constructor(tokenManager, historyManager, config){
         super();
         this.buttons = [];
+        this.tokenManager = tokenManager;
+        this.historyManager = historyManager;
 
         createLayout.call(this, config);
 
         this.resizer = new Resizer(this);
-        this.tokenManager = tokenManager;
-        this.historyManager = historyManager;
 
         this.tokenManager.change(renderExpression, this);
         this.tokenManager.change(renderAnswer, this);

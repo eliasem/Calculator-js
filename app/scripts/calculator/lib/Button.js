@@ -1,6 +1,6 @@
 import $ from 'jquery';
 
-class Button {
+export default class {
     constructor(id, config){
         this.id = id;
         this.html = config.html;
@@ -20,5 +20,3 @@ class Button {
 function onClick(){
     this.$el.trigger('keypress', this);
 }
-
-export default Button;

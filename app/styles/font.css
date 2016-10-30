@@ -23,6 +23,9 @@
     -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-bin:before {
+    content: "\e902";
+}
 .icon-backspace:before {
     content: "\e900";
 }

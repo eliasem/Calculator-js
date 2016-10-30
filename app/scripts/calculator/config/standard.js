@@ -1,7 +1,7 @@
 import Buttons from 'calculator/constant/Buttons';
 
 export default {
-    name: "standard",
+    name: 'standard',
     toolbar:{
         buttons:[Buttons.HISTORY]
     },

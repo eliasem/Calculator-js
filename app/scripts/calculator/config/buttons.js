@@ -3,7 +3,7 @@
 export default {
     'HISTORY' : { 'html': '<span class="icon icon-history">', 'class': 'history',
         actions:{
-            'toggle': { actionName: 'ToggleClass', actionArgs: ["&history", "displayNone"]}
+            'toggle': { actionName: 'ToggleClass', actionArgs: ['&history', 'displayNone']}
         }
     },
     'MC' : { 'html': 'MC', 'class': 'mc' },
@@ -13,7 +13,7 @@ export default {
     'MS' : { 'html': 'MS', 'class': 'ms' },
     'M_STACK' : { 'html': 'M <div class="triangle down">', 'class': 'm-stack',
         actions:{
-            'toggle': { actionName: 'ToggleClass', actionArgs: ["&memoryStack", "displayNone"]}
+            'toggle': { actionName: 'ToggleClass', actionArgs: ['&memoryStack', 'displayNone']}
         }
     },
     'PERCENT' : { 'html': '%', 'class': 'percent' },

@@ -1,3 +1,5 @@
+let events = Symbol('events');
+
 class EventObject{
     constructor(funct, context){
         this.funct = funct;
@@ -11,18 +13,18 @@ class EventObject{
 
 export default class EventApi{
     constructor(){
-        this._events = {};
+        this[events] = {};
     }
 
     on(eventName, funct, context){
-        if(!this._events[eventName]){ this._events[eventName] = []; }
-        this._events[eventName].push(new EventObject(funct, context));
+        if(!this[events][eventName]){ this[events][eventName] = []; }
+        this[events][eventName].push(new EventObject(funct, context));
     }
 
     trigger(eventName, ...args){
-        if(!this._events[eventName]){ return; }
+        if(!this[events][eventName]){ return; }
 
-        this._events[eventName].forEach((eventObj) => {
+        this[events][eventName].forEach((eventObj) => {
             eventObj.call.apply(eventObj, args);
         });
     }

@@ -15,7 +15,7 @@ describe ('Event Api', () => {
 
         it('should not trigger function with a different event name that does not exist', () => {
             let changeStub = sinon.stub();
-            underTest.on("change", changeStub);
+            underTest.on('change', changeStub);
 
             underTest.trigger('add');
 
@@ -24,10 +24,10 @@ describe ('Event Api', () => {
 
         it('should not trigger function with a different event name that does exists', () => {
             let changeStub = sinon.stub();
-            underTest.on("change", changeStub);
+            underTest.on('change', changeStub);
 
             let addStub = sinon.stub();
-            underTest.on("add", addStub);
+            underTest.on('add', addStub);
 
             underTest.trigger('add');
 
@@ -38,8 +38,8 @@ describe ('Event Api', () => {
         it('should trigger functions with same event name and pass arguments', () => {
             let changeStub = sinon.stub();
             let changeStub2 = sinon.stub();
-            underTest.on("change", changeStub);
-            underTest.on("change", changeStub2);
+            underTest.on('change', changeStub);
+            underTest.on('change', changeStub2);
 
             underTest.trigger('change', 4, 5);
 
@@ -56,13 +56,13 @@ describe ('Event Api', () => {
                 change2: function(){ expect(this.value).to.equal(50); }
             };
 
-            sinon.spy(changeObj, "change");
-            sinon.spy(changeObj, "change2");
+            sinon.spy(changeObj, 'change');
+            sinon.spy(changeObj, 'change2');
 
             let changeContext = {value:5};
             let changeContext2 = {value:50};
-            underTest.on("change", changeObj.change, changeContext);
-            underTest.on("change", changeObj.change2, changeContext2);
+            underTest.on('change', changeObj.change, changeContext);
+            underTest.on('change', changeObj.change2, changeContext2);
 
             underTest.trigger('change', 4, 5);
 

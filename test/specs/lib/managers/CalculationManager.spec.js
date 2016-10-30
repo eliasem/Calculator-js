@@ -12,7 +12,7 @@ describe ('Calculation Manager', () => {
 
     function createButton(calculationName){
         return {
-            $el : $("<div></div>"),
+            $el : $('<div></div>'),
             calculations:{
                 'calculation1': {calculationName: calculationName }
             }

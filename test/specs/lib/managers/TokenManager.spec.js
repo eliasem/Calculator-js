@@ -25,8 +25,8 @@ describe('Token Manager', () => {
                 evaulation: function(){ expect(this.value).to.equal(50); }
             };
 
-            sinon.spy(callbacks, "change");
-            sinon.spy(callbacks, "evaulation");
+            sinon.spy(callbacks, 'change');
+            sinon.spy(callbacks, 'evaulation');
 
             let changeContext = {value:5};
             let evaulationContext = {value:50};
@@ -34,7 +34,7 @@ describe('Token Manager', () => {
             underTest.change(callbacks.change, changeContext);
             underTest.evaluation(callbacks.evaulation, evaulationContext);
 
-            underTest.trigger('change');
+            underTest.trigger(TokenManagerEvent.CHANGE);
 
             expect(callbacks.change.called).to.equal(true);
             expect(callbacks.evaulation.called).to.equal(false);
@@ -47,7 +47,7 @@ describe('Token Manager', () => {
 
             underTest.tokens = ['5','+','4'];
 
-            underTest.trigger('evaluation');
+            underTest.trigger(TokenManagerEvent.EVALUATION);
 
             expect(evaluationCallback.getCall(0).args[0]).to.equal(9);
         });
@@ -59,79 +59,79 @@ describe('Token Manager', () => {
 
             underTest.tokens = ['5','+','4'];
 
-            underTest.trigger('change', 'arg');
+            underTest.trigger(TokenManagerEvent.CHANGE, 'arg');
 
             expect(changeCallback.getCall(0).args[0]).to.equal('arg');
         });
     });
 
-    describe("accessors", () => {
+    describe('accessors', () => {
 
         describe('expressionStr and answerStr', () => {
 
             it('should hold correct values when ending with an operator', () => {
-                underTest.push("10", {replace:true});
-                underTest.push("+");
-                underTest.push("40");
-                underTest.push("&divide;");
+                underTest.push('10', {replace:true});
+                underTest.push('+');
+                underTest.push('40');
+                underTest.push('&divide;');
 
-                expect(underTest.expressionStr).to.equal("10 + 40 &divide; ");
-                expect(underTest.answerStr).to.equal("");
+                expect(underTest.expressionStr).to.equal('10 + 40 &divide; ');
+                expect(underTest.answerStr).to.equal('');
             });
 
             it('should hold correct values when ending with a number', () => {
-                underTest.push("10", {replace:true});
-                underTest.push("+");
-                underTest.push("40");
+                underTest.push('10', {replace:true});
+                underTest.push('+');
+                underTest.push('40');
 
-                expect(underTest.expressionStr).to.equal("10 + ");
-                expect(underTest.answerStr).to.equal("40");
+                expect(underTest.expressionStr).to.equal('10 + ');
+                expect(underTest.answerStr).to.equal('40');
             });
         });
 
     });
 
-    describe("adding tokens", function(){
+    describe('adding tokens', function(){
 
         beforeEach(() => {
-            sinon.stub(underTest, "trigger");
+            sinon.stub(underTest, 'trigger');
         });
 
         afterEach(() => {
             underTest.trigger.restore();
         });
 
-        describe("push", () => {
+        describe('push', () => {
 
             it('should change the state', () => {
                 underTest.state = TokenManagerState.EVALUATED;
 
-                underTest.push("1");
+                underTest.push('1');
 
                 expect(underTest.state).to.equal(TokenManagerState.NORMAL);
             });
 
             it('should trigger a change event when push is called', () => {
-                underTest.push("1");
+                underTest.push('1');
 
                 expect(underTest.trigger.getCall(0).args[0]).to.equal(TokenManagerEvent.CHANGE);
             });
 
             it('should replace the last token when option is given', () => {
-                underTest.push("1");
-                underTest.push("2", {replace: true});
+                underTest.push('1');
+                underTest.push('2', {replace: true});
 
-                expect(underTest.tokens).to.eql(["0", "2"]);
+                expect(underTest.tokens).to.eql(['0', '2']);
             });
 
             it('should push token to tokens', () => {
-                underTest.push("1");
-                expect(underTest.tokens).to.eql(["0", "1"]);
+                underTest.push('1');
+                expect(underTest.tokens).to.eql(['0', '1']);
             });
 
         });
 
-        describe("evaluate", () => {
+        describe('evaluate', () => {
 
             it('should change the state', () =>{
                 underTest.state = TokenManagerState.NORMAL;
@@ -148,114 +148,144 @@ describe('Token Manager', () => {
             });
 
             it('should push evaluated value tokens', () => {
-                underTest.push("5");
-                underTest.push("+");
-                underTest.push("7");
+                underTest.push('5');
+                underTest.push('+');
+                underTest.push('7');
 
                 underTest.evaluate();
                 expect(underTest.tokens).to.eql([12]);
             });
+
+            it('should track if evaluation has already occurred', () => {
+                underTest.push('5');
+                underTest.push('+');
+                underTest.push('7');
+
+                underTest.evaluate();
+                expect(underTest.hasAlreadyEvaluated()).to.equal(false);
+                underTest.evaluate();
+                expect(underTest.hasAlreadyEvaluated()).to.equal(true);
+            });
         });
     });
 
-    describe("clearing", () => {
+    describe('clearing', () => {
         it('should set the state to normal', () => {
             underTest.state = TokenManagerState.EVALUATED;
-            underTest.push("10", {replace:true});
+            underTest.push('10', {replace:true});
 
             underTest.clear();
 
             expect(underTest.state).to.equal(TokenManagerState.NORMAL);
         });
 
-        it("clear the stack", () => {
-            underTest.push("10", {replace:true});
-            underTest.push("+");
-            underTest.push("40");
+        it('clear the stack', () => {
+            underTest.push('10', {replace:true});
+            underTest.push('+');
+            underTest.push('40');
 
             underTest.clear();
 
-            expect(underTest.tokens).to.eql(["0"]);
+            expect(underTest.tokens).to.eql(['0']);
         });
 
         it('should just append 0', () => {
-            underTest.push("10", {replace:true});
-            underTest.push("+");
+            underTest.push('10', {replace:true});
+            underTest.push('+');
 
             underTest.clear(true);
 
-            expect(underTest.tokens).to.eql(["10", "+", "0"]);
+            expect(underTest.tokens).to.eql(['10', '+', '0']);
         });
 
         it('should just clear the last number', () => {
-            underTest.push("1", {replace:true});
-            underTest.push("0");
-            underTest.push("+");
-            underTest.push("5");
-            underTest.push("0");
+            underTest.push('1', {replace:true});
+            underTest.push('0');
+            underTest.push('+');
+            underTest.push('5');
+            underTest.push('0');
 
             underTest.clear(true);
 
-            expect(underTest.tokens).to.eql(["1", "0", "+", "0"]);
+            expect(underTest.tokens).to.eql(['1', '0', '+', '0']);
         });
 
         it('should not keep appending 0', () => {
-            underTest.push("1", {replace:true});
-            underTest.push("0");
-            underTest.push("+");
-            underTest.push("5");
-            underTest.push("0");
+            underTest.push('1', {replace:true});
+            underTest.push('0');
+            underTest.push('+');
+            underTest.push('5');
+            underTest.push('0');
 
             underTest.clear(true);
             underTest.clear(true);
 
-            expect(underTest.tokens).to.eql(["1", "0", "+", "0"]);
+            expect(underTest.tokens).to.eql(['1', '0', '+', '0']);
         });
     });
 
-    describe("backspace", () => {
+    describe('backspace', () => {
 
-        it("should add 0 if pressed atleast once", () => {
-            underTest.push("9", {replace:true});
+        it('should add 0 if pressed at least once', () => {
+            underTest.push('9', {replace:true});
             underTest.backspace();
 
-            expect(underTest.tokens).to.eql(["0"]);
+            expect(underTest.tokens).to.eql(['0']);
         });
 
         it('should go up to the last operator', () => {
-            underTest.push("9", {replace:true});
-            underTest.push("+");
-            underTest.push("1");
+            underTest.push('9', {replace:true});
+            underTest.push('+');
+            underTest.push('1');
             underTest.backspace();
 
-            expect(underTest.tokens).to.eql(["9", "+", "0"]);
+            expect(underTest.tokens).to.eql(['9', '+', '0']);
         });
 
         it('should not go past last operator', () => {
-            underTest.push("9", {replace:true});
-            underTest.push("+");
-            underTest.push("1");
+            underTest.push('9', {replace:true});
+            underTest.push('+');
+            underTest.push('1');
             underTest.backspace();
             underTest.backspace();
             underTest.backspace();
             underTest.backspace();
 
-            expect(underTest.tokens).to.eql(["9", "+", "0"]);
+            expect(underTest.tokens).to.eql(['9', '+', '0']);
         });
     });
 
-    describe("isLastToken", () => {
+    describe('isLastToken', () => {
         it('should return if tokens is empty', () => {
             underTest.tokens = [];
-            expect(underTest.isLastToken(["+", "-"])).to.equal(false);
+            expect(underTest.isLastToken(['+', '-'])).to.equal(false);
         });
 
         it('should return correct value when called', () => {
-            underTest.push("1");
-            underTest.push("-");
+            underTest.push('1');
+            underTest.push('-');
 
-            expect(underTest.isLastToken(["+", "-"])).to.equal(true);
-            expect(underTest.isLastToken(["1"])).to.equal(false);
+            expect(underTest.isLastToken(['+', '-'])).to.equal(true);
+            expect(underTest.isLastToken(['1'])).to.equal(false);
+        });
+    });
+
+    describe('applyHistory', () => {
+        beforeEach(() => {
+            sinon.stub(underTest, 'trigger');
+        });
+
+        afterEach(() => {
+            underTest.trigger.restore();
+        });
+
+        it('should trigger a change when history is set', () => {
+            underTest.state = TokenManagerState.EVALUATED;
+            underTest.tokens = ['5','+','4'];
+            underTest.applyHistory({tokens: ['20', '+', '6' ]});
+
+            expect(underTest.state).to.equal(TokenManagerState.NORMAL);
+            expect(underTest.trigger.getCall(0).args[0]).to.equal(TokenManagerEvent.APPLIED_HISTORY);
         });
     });
 });

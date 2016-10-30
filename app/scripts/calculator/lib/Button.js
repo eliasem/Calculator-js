@@ -9,7 +9,7 @@ export default class {
         this.actions = config.actions;
         this.calculations = config.calculations;
 
-        this.$el = $(`<div class="calc-button ${this.class}">${this.html}</div>`);
+        this.$el = $(`<div class='calc-button ${this.class}'>${this.html}</div>`);
 
         this.$el.on('mousedown', e => $(e.currentTarget).addClass('pressed'));
         this.$el.on('mouseup mouseout', e => $(e.currentTarget).removeClass('pressed'));

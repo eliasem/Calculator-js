@@ -5,7 +5,7 @@ export function toString (tokens, options){
     options = options || { skipEndOperator: false };
     options.skipEndOperator = options.skipEndOperator === true;
 
-    let s = "";
+    let s = '';
 
     for(let t = 0; t < tokens.length; ++t){
         let str = tokens[t];

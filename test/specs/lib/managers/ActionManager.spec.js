@@ -12,7 +12,7 @@ describe ('Action Manager', () => {
 
     function createButton(actionName, actionArgs){
         return {
-            $el : $("<div></div>"),
+            $el : $('<div></div>'),
             actions:{
                 'action1': {actionName: actionName, actionArgs: actionArgs }
             }

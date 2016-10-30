@@ -18,7 +18,7 @@ import standard from 'calculator/config/standard';
 
 export default class {
     constructor(options){
-        this.$el = $("<div class='calculator'>");
+        this.$el = $('<div class="calculator">');
 
         this.tokenManager = new TokenManager();
         this.historyManager = new HistoryManager(this.tokenManager);

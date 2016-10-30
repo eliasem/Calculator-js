@@ -5,7 +5,7 @@ import Resizer from './behaviours/Resizer';
 import buildLayout from './builder/layout';
 
 
-export default class Layout extends Referencable{
+export default class Layout extends Referencable {
     constructor(tokenManager, historyManager, config){
         super();
         this.buttons = [];
@@ -18,6 +18,7 @@ export default class Layout extends Referencable{
 
         this.tokenManager.change(renderExpression, this);
         this.tokenManager.change(renderAnswer, this);
+        this.tokenManager.appliedHistory(renderCustomExpressionAndAnswer, this);
         this.tokenManager.evaluation(renderEvaluationAnswer, this);
         renderAnswer.call(this);
     }
@@ -41,4 +42,9 @@ function renderAnswer(){
 
 function renderEvaluationAnswer(answer){
     this.$answer.html(answer);
+}
+
+function renderCustomExpressionAndAnswer(expression, answer){
+    this.$expressionArea.html(expression);
+    renderEvaluationAnswer.call(this, answer);
 }

@@ -13,14 +13,14 @@ describe('Add Number Token', () => {
 
         tokenManager = {
             push: sinon.stub(),
-            answerStr: "0",
+            answerStr: '0',
             state: TokenManagerState.NORMAL
         };
     });
 
     it('should not be able to type 00', () => {
-        button.mathSymbol = "0";
-        tokenManager.answerStr = "0";
+        button.mathSymbol = '0';
+        tokenManager.answerStr = '0';
 
         underTest = new AddNumberToken(tokenManager, button);
 
@@ -28,7 +28,7 @@ describe('Add Number Token', () => {
     });
 
     it('should replace if answerStr is 0', () => {
-        button.mathSymbol = "2";
+        button.mathSymbol = '2';
 
         underTest = new AddNumberToken(tokenManager, button);
 
@@ -36,7 +36,7 @@ describe('Add Number Token', () => {
     });
 
     it('should replace if the token manager is in the evaluated state', () => {
-        tokenManager.answerStr = "2";
+        tokenManager.answerStr = '2';
         tokenManager.state = TokenManagerState.EVALUATED;
 
         underTest = new AddNumberToken(tokenManager, button);
@@ -45,8 +45,8 @@ describe('Add Number Token', () => {
     });
 
     it('should not add more than one .', () => {
-        tokenManager.answerStr = "1.0";
-        button.mathSymbol = ".";
+        tokenManager.answerStr = '1.0';
+        button.mathSymbol = '.';
 
         underTest = new AddNumberToken(tokenManager, button);
 
@@ -54,8 +54,8 @@ describe('Add Number Token', () => {
     });
 
     it('should not remove 0 if the . is the first button pressed', () => {
-        tokenManager.answerStr = "0";
-        button.mathSymbol = ".";
+        tokenManager.answerStr = '0';
+        button.mathSymbol = '.';
 
         underTest = new AddNumberToken(tokenManager, button);
 

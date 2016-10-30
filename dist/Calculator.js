@@ -10453,18 +10453,18 @@ define('calculator/lib/calculations/AddNumberToken',['exports', 'calculator/cons
         var mathSymbol = button.mathSymbol;
         var removeZero = true;
 
-        if (tokenManager.answerStr === "0" && button.mathSymbol === '0') {
+        if (tokenManager.answerStr === '0' && button.mathSymbol === '0') {
             return;
         }
         if (tokenManager.answerStr.indexOf('.') !== -1 && button.mathSymbol === '.') {
             return;
         }
-        if (tokenManager.answerStr === "0" && button.mathSymbol === '.') {
+        if (tokenManager.answerStr === '0' && button.mathSymbol === '.') {
             removeZero = false;
         }
 
         tokenManager.push(mathSymbol, {
-            replace: tokenManager.answerStr === "0" && removeZero || tokenManager.state === _TokenManagerStates2.default.EVALUATED
+            replace: tokenManager.answerStr === '0' && removeZero || tokenManager.state === _TokenManagerStates2.default.EVALUATED
         });
     };
 });
@@ -10480,7 +10480,8 @@ define('calculator/constant/TokenManagerEvents',['exports'], function (exports) 
 
     Object.defineProperties(TokenManagerEvents, {
         CHANGE: { value: 'change' },
-        EVALUATION: { value: 'evaluation' }
+        EVALUATION: { value: 'evaluation' },
+        APPLIED_HISTORY: { value: 'applied_history' }
     });
 
     exports.default = TokenManagerEvents;
@@ -10641,7 +10642,7 @@ define('calculator/lib/behaviours/Referencable',['exports'], function (exports) 
         _createClass(_class, [{
             key: 'getReference',
             value: function getReference(referenceString) {
-                if (referenceString[0] !== "&") {
+                if (referenceString[0] !== '&') {
                     return;
                 }
 
@@ -10735,49 +10736,70 @@ define('calculator/lib/behaviours/Resizer',['exports', 'jquery'], function (expo
 });
 //# sourceMappingURL=Resizer.js.map
 ;
-define('calculator/lib/builder/Panel',['exports', 'jquery'], function (exports, _jquery) {
-        'use strict';
+define('calculator/constant/Panel',['exports'], function (exports) {
+    'use strict';
 
-        Object.defineProperty(exports, "__esModule", {
-                value: true
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    var Panel = {};
+
+    Object.defineProperties(Panel, {
+        CLOSE_EVENT: { value: 'closePanel' }
+    });
+
+    exports.default = Panel;
+});
+//# sourceMappingURL=Panel.js.map
+;
+define('calculator/lib/builder/Panel',['exports', 'jquery', 'calculator/constant/Panel'], function (exports, _jquery, _Panel) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+
+    var _jquery2 = _interopRequireDefault(_jquery);
+
+    var _Panel2 = _interopRequireDefault(_Panel);
+
+    function _interopRequireDefault(obj) {
+        return obj && obj.__esModule ? obj : {
+            default: obj
+        };
+    }
+
+    function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+            throw new TypeError("Cannot call a class as a function");
+        }
+    }
+
+    var _class = function _class(options) {
+        var _this = this;
+
+        _classCallCheck(this, _class);
+
+        options = options || {};
+
+        this.$el = (0, _jquery2.default)('<div class=\'panel ' + options.className + ' displayNone\'></div>');
+        this.$innerPanel = (0, _jquery2.default)('<div class="innerPanel"></div>');
+
+        this.$el.append(this.$innerPanel);
+        this.$el.on(_Panel2.default.CLOSE_EVENT, function () {
+            _this.$el.addClass('displayNone');
         });
 
-        var _jquery2 = _interopRequireDefault(_jquery);
+        this.$el.click(function () {
+            _this.$el.trigger(_Panel2.default.CLOSE_EVENT);
+        });
 
-        function _interopRequireDefault(obj) {
-                return obj && obj.__esModule ? obj : {
-                        default: obj
-                };
-        }
+        this.$innerPanel.click(function (e) {
+            e.stopImmediatePropagation();
+        });
+    };
 
-        function _classCallCheck(instance, Constructor) {
-                if (!(instance instanceof Constructor)) {
-                        throw new TypeError("Cannot call a class as a function");
-                }
-        }
-
-        var _class = function _class(options) {
-                var _this = this;
-
-                _classCallCheck(this, _class);
-
-                options = options || {};
-
-                this.$el = (0, _jquery2.default)('<div class="panel ' + options.className + ' displayNone"></div>');
-                this.$innerPanel = (0, _jquery2.default)('<div class="innerPanel"></div>');
-
-                this.$el.append(this.$innerPanel);
-
-                this.$el.click(function () {
-                        _this.$el.addClass('displayNone');
-                });
-
-                this.$innerPanel.click(function (e) {
-                        e.stopImmediatePropagation();
-                });
-        };
-
-        exports.default = _class;
+    exports.default = _class;
 });
 //# sourceMappingURL=Panel.js.map
 ;
@@ -11193,6 +11215,22 @@ define('text',['module'], function (module) {
 
 define('text!templates/history.tpl',[],function () { return '<div class="content">\r\n    <div class="scroll"></div>\r\n    <div class="footer">\r\n        <div class="trash"><a class ="icon icon-bin"></a></div>\r\n    </div>\r\n</div>';});
 
+define('calculator/constant/HistoryManagerEvents',['exports'], function (exports) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    var HistoryManagerEvents = {};
+
+    Object.defineProperties(HistoryManagerEvents, {
+        CHANGE: { value: 'change' }
+    });
+
+    exports.default = HistoryManagerEvents;
+});
+//# sourceMappingURL=HistoryManagerEvents.js.map
+;
 /**
  * math.js
  * https://github.com/josdejong/mathjs
@@ -11363,7 +11401,7 @@ define('calculator/token',['exports', 'mathjs', 'calculator/utils'], function (e
         options = options || { skipEndOperator: false };
         options.skipEndOperator = options.skipEndOperator === true;
 
-        var s = "";
+        var s = '';
 
         for (var t = 0; t < tokens.length; ++t) {
             var str = tokens[t];
@@ -11471,7 +11509,7 @@ define('calculator/lib/History',['exports', 'jquery', 'calculator/token', 'text!
 });
 //# sourceMappingURL=History.js.map
 ;
-define('calculator/lib/builder/HistoryPanel',['exports', './Panel', 'text!templates/history.tpl', 'calculator/lib/History'], function (exports, _Panel2, _history, _History) {
+define('calculator/lib/builder/HistoryPanel',['exports', './Panel', 'text!templates/history.tpl', 'calculator/constant/HistoryManagerEvents', 'calculator/lib/History'], function (exports, _Panel2, _history, _HistoryManagerEvents, _History) {
     'use strict';
 
     Object.defineProperty(exports, "__esModule", {
@@ -11481,6 +11519,8 @@ define('calculator/lib/builder/HistoryPanel',['exports', './Panel', 'text!templa
     var _Panel3 = _interopRequireDefault(_Panel2);
 
     var _history2 = _interopRequireDefault(_history);
+
+    var _HistoryManagerEvents2 = _interopRequireDefault(_HistoryManagerEvents);
 
     var _History2 = _interopRequireDefault(_History);
 
@@ -11520,7 +11560,8 @@ define('calculator/lib/builder/HistoryPanel',['exports', './Panel', 'text!templa
         if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
     }
 
-    var $scroll = Symbol("$scroll");
+    var $scroll = Symbol('$scroll');
+    var $trash = Symbol('$trash');
 
     var _class = function (_Panel) {
         _inherits(_class, _Panel);
@@ -11531,12 +11572,16 @@ define('calculator/lib/builder/HistoryPanel',['exports', './Panel', 'text!templa
             var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(_class).call(this, options));
 
             _this.historyManager = historyManager;
-            _this.historyManager.on('change', addHistory, _this);
+            _this.historyManager.on(_HistoryManagerEvents2.default.CHANGE, updateHistory, _this);
 
             _this.$innerPanel.append(_history2.default);
             _this[$scroll] = _this.$innerPanel.find('.scroll');
+            _this[$trash] = _this.$innerPanel.find('.trash');
+
+            _this[$trash].on('click', _this.historyManager.clear.bind(_this.historyManager));
 
             buildHistory.call(_this);
+            updateTrash.call(_this);
             return _this;
         }
 
@@ -11546,6 +11591,18 @@ define('calculator/lib/builder/HistoryPanel',['exports', './Panel', 'text!templa
     exports.default = _class;
 
 
+    function updateHistory() {
+        var state = this.historyManager.historyStates[this.historyManager.historyStates.length - 1];
+
+        if (state) {
+            addHistory.call(this, state);
+        } else {
+            this[$scroll].empty();
+        }
+
+        updateTrash.call(this);
+    }
+
     function buildHistory() {
         var _this2 = this;
 
@@ -11554,11 +11611,15 @@ define('calculator/lib/builder/HistoryPanel',['exports', './Panel', 'text!templa
         });
     }
 
-    function addHistory() {
-        var state = this.historyManager.historyStates[this.historyManager.historyStates.length - 1];
+    function addHistory(state) {
         var historyView = new _History2.default(state);
-
+        this.historyManager.registerHistory(historyView, state, this.$el);
         this[$scroll].prepend(historyView.$el);
+    }
+
+    function updateTrash() {
+        var numberOfStates = this.historyManager.historyStates.length;
+        this[$trash].toggle(numberOfStates !== 0);
     }
 });
 //# sourceMappingURL=HistoryPanel.js.map
@@ -11571,10 +11632,10 @@ define('calculator/lib/builder/layout',['exports', 'jquery', './Panel', './Histo
     });
 
     exports.default = function (config) {
-        this.$el = (0, _jquery2.default)('<div class="' + config.name + '"></div>');
+        this.$el = (0, _jquery2.default)('<div class=\'' + config.name + '\'></div>');
 
-        this.$toolbar = (0, _jquery2.default)('<div class="toolbar"></div>');
-        this.$toolbar.append('<div class="title">' + config.name + '</div>');
+        this.$toolbar = (0, _jquery2.default)('<div class=\'toolbar\'></div>');
+        this.$toolbar.append('<div class=\'title\'>' + config.name + '</div>');
         var $toolbarButtons = (0, _jquery2.default)('<div class="buttons"></div>');
 
         var _iteratorNormalCompletion = true;
@@ -11607,9 +11668,9 @@ define('calculator/lib/builder/layout',['exports', 'jquery', './Panel', './Histo
 
         this.$el.append(this.$toolbar);
 
-        this.$output = (0, _jquery2.default)('<div class="output"></div>');
-        this.$expressionArea = (0, _jquery2.default)('<div class="expressionArea"></div>');
-        this.$answer = (0, _jquery2.default)('<div class="answer"></div>');
+        this.$output = (0, _jquery2.default)('<div class=\'output\'></div>');
+        this.$expressionArea = (0, _jquery2.default)('<div class=\'expressionArea\'></div>');
+        this.$answer = (0, _jquery2.default)('<div class=\'answer\'></div>');
 
         this.$output.append(this.$expressionArea);
         this.$output.append(this.$answer);
@@ -11617,8 +11678,8 @@ define('calculator/lib/builder/layout',['exports', 'jquery', './Panel', './Histo
         this.$el.append(this.$output);
 
         for (var row = 0; row < config.rows.length; row++) {
-            var className = config.rows[row].className || "";
-            var $row = (0, _jquery2.default)('<div class="row ' + className + '"></div>');
+            var className = config.rows[row].className || '';
+            var $row = (0, _jquery2.default)('<div class=\'row ' + className + '\'></div>');
 
             for (var b in config.rows[row].buttons) {
                 $row.append(config.rows[row].buttons[b].$el);
@@ -11628,8 +11689,8 @@ define('calculator/lib/builder/layout',['exports', 'jquery', './Panel', './Histo
             this.$el.append($row);
         }
 
-        this.memoryStack = new _Panel2.default({ className: "memoryStackPanel" });
-        this.history = new _HistoryPanel2.default(this.historyManager, { className: "historyPanel" });
+        this.memoryStack = new _Panel2.default({ className: 'memoryStackPanel' });
+        this.history = new _HistoryPanel2.default(this.historyManager, { className: 'historyPanel' });
 
         this.$el.append(this.memoryStack.$el);
         this.$el.append(this.history.$el);
@@ -11736,6 +11797,7 @@ define('calculator/lib/Layout',['exports', 'jquery', './behaviours/Referencable'
 
             _this.tokenManager.change(renderExpression, _this);
             _this.tokenManager.change(renderAnswer, _this);
+            _this.tokenManager.appliedHistory(renderCustomExpressionAndAnswer, _this);
             _this.tokenManager.evaluation(renderEvaluationAnswer, _this);
             renderAnswer.call(_this);
             return _this;
@@ -11771,6 +11833,11 @@ define('calculator/lib/Layout',['exports', 'jquery', './behaviours/Referencable'
 
     function renderEvaluationAnswer(answer) {
         this.$answer.html(answer);
+    }
+
+    function renderCustomExpressionAndAnswer(expression, answer) {
+        this.$expressionArea.html(expression);
+        renderEvaluationAnswer.call(this, answer);
     }
 });
 //# sourceMappingURL=Layout.js.map
@@ -12213,15 +12280,17 @@ define('calculator/lib/managers/TokenManager',['exports', 'calculator/token', 'c
         };
     }();
 
-    var eventApi = Symbol("eventApi");
+    var eventApi = Symbol('eventApi');
+    var stateTracker = Symbol('stateTracker');
 
     var _class = function () {
         function _class() {
             _classCallCheck(this, _class);
 
             this[eventApi] = new _EventApi2.default();
+            this[stateTracker] = 0;
 
-            this.tokens = ["0"];
+            this.tokens = ['0'];
             this.state = _TokenManagerStates2.default.NORMAL;
 
             createAccessors.call(this);
@@ -12238,16 +12307,25 @@ define('calculator/lib/managers/TokenManager',['exports', 'calculator/token', 'c
                 this[eventApi].on(_TokenManagerEvents2.default.EVALUATION, funct, context);
             }
         }, {
+            key: 'appliedHistory',
+            value: function appliedHistory(funct, context) {
+                this[eventApi].on(_TokenManagerEvents2.default.APPLIED_HISTORY, funct, context);
+            }
+        }, {
             key: 'trigger',
-            value: function trigger(eventName, arg) {
-                arg = eventName === _TokenManagerEvents2.default.EVALUATION ? (0, _token.evaluateTokens)(this.tokens) : arg;
+            value: function trigger(eventName) {
+                for (var _len = arguments.length, arg = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+                    arg[_key - 1] = arguments[_key];
+                }
 
-                this[eventApi].trigger(eventName, arg);
+                arg = eventName === _TokenManagerEvents2.default.EVALUATION ? [(0, _token.evaluateTokens)(this.tokens)] : arg;
+
+                this[eventApi].trigger.apply(this[eventApi], [eventName].concat(arg));
             }
         }, {
             key: 'push',
             value: function push(value, options) {
-                this.state = _TokenManagerStates2.default.NORMAL;
+                updateState.call(this, _TokenManagerStates2.default.NORMAL);
 
                 options = options || {};
 
@@ -12261,7 +12339,7 @@ define('calculator/lib/managers/TokenManager',['exports', 'calculator/token', 'c
         }, {
             key: 'evaluate',
             value: function evaluate() {
-                this.state = _TokenManagerStates2.default.EVALUATED;
+                updateState.call(this, _TokenManagerStates2.default.EVALUATED);
 
                 var value = (0, _token.evaluateTokens)(this.tokens);
                 var tokens = this.tokens.slice(0);
@@ -12269,6 +12347,11 @@ define('calculator/lib/managers/TokenManager',['exports', 'calculator/token', 'c
 
                 this.tokens.push(value);
                 this.trigger(_TokenManagerEvents2.default.CHANGE, tokens);
+            }
+        }, {
+            key: 'hasAlreadyEvaluated',
+            value: function hasAlreadyEvaluated() {
+                return this[stateTracker] !== 1;
             }
         }, {
             key: 'isLastToken',
@@ -12288,7 +12371,7 @@ define('calculator/lib/managers/TokenManager',['exports', 'calculator/token', 'c
         }, {
             key: 'clear',
             value: function clear(last) {
-                this.state = _TokenManagerStates2.default.NORMAL;
+                updateState.call(this, _TokenManagerStates2.default.NORMAL);
                 if (!last) {
                     this.tokens.splice(0);
                 } else {
@@ -12296,7 +12379,7 @@ define('calculator/lib/managers/TokenManager',['exports', 'calculator/token', 'c
                     this.tokens.splice(lastOperatorIndex + 1, this.tokens.length);
                 }
 
-                this.tokens.push("0");
+                this.tokens.push('0');
 
                 this.trigger(_TokenManagerEvents2.default.CHANGE);
             }
@@ -12311,10 +12394,20 @@ define('calculator/lib/managers/TokenManager',['exports', 'calculator/token', 'c
                 this.tokens.splice(-1);
 
                 if (lastOperatorIndex === this.tokens.length - 1 || !this.tokens.length) {
-                    this.tokens.push("0");
+                    this.tokens.push('0');
                 }
 
                 this.trigger(_TokenManagerEvents2.default.CHANGE);
+            }
+        }, {
+            key: 'applyHistory',
+            value: function applyHistory(history) {
+                updateState.call(this, _TokenManagerStates2.default.NORMAL);
+
+                this.tokens.splice(0);
+                this.tokens.push.apply(this.tokens, history.tokens);
+
+                this.trigger(_TokenManagerEvents2.default.APPLIED_HISTORY, (0, _token.toString)(history.tokens), (0, _token.evaluateTokens)(history.tokens));
             }
         }]);
 
@@ -12328,13 +12421,13 @@ define('calculator/lib/managers/TokenManager',['exports', 'calculator/token', 'c
         var _this = this;
 
         Object.defineProperties(this, {
-            "expressionStr": {
+            'expressionStr': {
                 get: function get() {
                     var lastOperatorIndex = getLastOperatorIndex.call(_this);
                     return (0, _token.toString)(_this.tokens.slice(0, lastOperatorIndex + 1));
                 }
             },
-            "answerStr": {
+            'answerStr': {
                 get: function get() {
                     var lastOperatorIndex = getLastOperatorIndex.call(_this);
                     return (0, _token.toString)(_this.tokens.slice(lastOperatorIndex + 1));
@@ -12351,6 +12444,15 @@ define('calculator/lib/managers/TokenManager',['exports', 'calculator/token', 'c
         operatorIndex = Math.max(this.tokens.lastIndexOf('&divide;'), operatorIndex);
 
         return operatorIndex;
+    }
+
+    function updateState(state) {
+        this.state = state;
+        if (state === _TokenManagerStates2.default.EVALUATED) {
+            this[stateTracker]++;
+        } else {
+            this[stateTracker] = 0;
+        }
     }
 });
 //# sourceMappingURL=TokenManager.js.map
@@ -12379,7 +12481,7 @@ define('calculator/lib/model/History',["exports"], function (exports) {
 });
 //# sourceMappingURL=History.js.map
 ;
-define('calculator/lib/managers/HistoryManager',['exports', 'calculator/constant/TokenManagerStates', 'calculator/lib/model/History', 'calculator/lib/event/EventApi'], function (exports, _TokenManagerStates, _History, _EventApi2) {
+define('calculator/lib/managers/HistoryManager',['exports', 'calculator/constant/TokenManagerStates', 'calculator/lib/model/History', 'calculator/lib/event/EventApi', 'calculator/constant/HistoryManagerEvents', 'calculator/constant/Panel'], function (exports, _TokenManagerStates, _History, _EventApi2, _HistoryManagerEvents, _Panel) {
     'use strict';
 
     Object.defineProperty(exports, "__esModule", {
@@ -12392,6 +12494,10 @@ define('calculator/lib/managers/HistoryManager',['exports', 'calculator/constant
 
     var _EventApi3 = _interopRequireDefault(_EventApi2);
 
+    var _HistoryManagerEvents2 = _interopRequireDefault(_HistoryManagerEvents);
+
+    var _Panel2 = _interopRequireDefault(_Panel);
+
     function _interopRequireDefault(obj) {
         return obj && obj.__esModule ? obj : {
             default: obj
@@ -12403,6 +12509,24 @@ define('calculator/lib/managers/HistoryManager',['exports', 'calculator/constant
             throw new TypeError("Cannot call a class as a function");
         }
     }
+
+    var _createClass = function () {
+        function defineProperties(target, props) {
+            for (var i = 0; i < props.length; i++) {
+                var descriptor = props[i];
+                descriptor.enumerable = descriptor.enumerable || false;
+                descriptor.configurable = true;
+                if ("value" in descriptor) descriptor.writable = true;
+                Object.defineProperty(target, descriptor.key, descriptor);
+            }
+        }
+
+        return function (Constructor, protoProps, staticProps) {
+            if (protoProps) defineProperties(Constructor.prototype, protoProps);
+            if (staticProps) defineProperties(Constructor, staticProps);
+            return Constructor;
+        };
+    }();
 
     function _possibleConstructorReturn(self, call) {
         if (!self) {
@@ -12428,6 +12552,8 @@ define('calculator/lib/managers/HistoryManager',['exports', 'calculator/constant
         if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
     }
 
+    var previousTokens = Symbol('previousTokens');
+
     var _class = function (_EventApi) {
         _inherits(_class, _EventApi);
 
@@ -12437,11 +12563,30 @@ define('calculator/lib/managers/HistoryManager',['exports', 'calculator/constant
             var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(_class).call(this));
 
             _this.historyStates = [];
+            _this[previousTokens] = null;
 
             _this.tokenManager = tokenManager;
             _this.tokenManager.change(onChange, _this);
             return _this;
         }
+
+        _createClass(_class, [{
+            key: 'registerHistory',
+            value: function registerHistory(view, state, $parentView) {
+                var _this2 = this;
+
+                view.$el.on('click', function () {
+                    _this2.tokenManager.applyHistory(state);
+                    $parentView.trigger(_Panel2.default.CLOSE_EVENT);
+                });
+            }
+        }, {
+            key: 'clear',
+            value: function clear() {
+                this.historyStates = [];
+                this.trigger(_HistoryManagerEvents2.default.CHANGE);
+            }
+        }]);
 
         return _class;
     }(_EventApi3.default);
@@ -12453,8 +12598,13 @@ define('calculator/lib/managers/HistoryManager',['exports', 'calculator/constant
         if (this.tokenManager.state !== _TokenManagerStates2.default.EVALUATED) {
             return;
         }
+        if (this.tokenManager.hasAlreadyEvaluated()) {
+            return;
+        }
+
         this.historyStates.push(new _History2.default(tokens, this.tokenManager.answerStr));
-        this.trigger('change');
+        this[previousTokens] = tokens;
+        this.trigger(_HistoryManagerEvents2.default.CHANGE);
     }
 });
 //# sourceMappingURL=HistoryManager.js.map
@@ -12468,7 +12618,7 @@ define('calculator/config/buttons',['exports'], function (exports) {
     exports.default = {
         'HISTORY': { 'html': '<span class="icon icon-history">', 'class': 'history',
             actions: {
-                'toggle': { actionName: 'ToggleClass', actionArgs: ["&history", "displayNone"] }
+                'toggle': { actionName: 'ToggleClass', actionArgs: ['&history', 'displayNone'] }
             }
         },
         'MC': { 'html': 'MC', 'class': 'mc' },
@@ -12478,7 +12628,7 @@ define('calculator/config/buttons',['exports'], function (exports) {
         'MS': { 'html': 'MS', 'class': 'ms' },
         'M_STACK': { 'html': 'M <div class="triangle down">', 'class': 'm-stack',
             actions: {
-                'toggle': { actionName: 'ToggleClass', actionArgs: ["&memoryStack", "displayNone"] }
+                'toggle': { actionName: 'ToggleClass', actionArgs: ['&memoryStack', 'displayNone'] }
             }
         },
         'PERCENT': { 'html': '%', 'class': 'percent' },
@@ -12616,7 +12766,7 @@ define('calculator/lib/Button',['exports', 'jquery'], function (exports, _jquery
         this.actions = config.actions;
         this.calculations = config.calculations;
 
-        this.$el = (0, _jquery2.default)('<div class="calc-button ' + this.class + '">' + this.html + '</div>');
+        this.$el = (0, _jquery2.default)('<div class=\'calc-button ' + this.class + '\'>' + this.html + '</div>');
 
         this.$el.on('mousedown', function (e) {
             return (0, _jquery2.default)(e.currentTarget).addClass('pressed');
@@ -12682,7 +12832,7 @@ define('calculator/config/standard',['exports', 'calculator/constant/Buttons'], 
     }
 
     exports.default = {
-        name: "standard",
+        name: 'standard',
         toolbar: {
             buttons: [_Buttons2.default.HISTORY]
         },
@@ -17267,7 +17417,7 @@ define('main',['exports', 'jquery', 'calculator/lib/Actions', 'calculator/lib/Ca
         var _class = function _class(options) {
                 _classCallCheck(this, _class);
 
-                this.$el = (0, _jquery2.default)("<div class='calculator'>");
+                this.$el = (0, _jquery2.default)('<div class="calculator">');
 
                 this.tokenManager = new _TokenManager2.default();
                 this.historyManager = new _HistoryManager2.default(this.tokenManager);

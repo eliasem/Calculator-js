@@ -27,8 +27,10 @@ body { margin: 0; }
 
 .calc-button { display:inline-block; padding:15px; text-align: center; width: 100%; height: 100%; box-sizing: border-box; vertical-align: middle;
     &::before { content: ''; display: inline-block; height:100%; vertical-align: middle; }
-    &:hover { background: #dddddd; }
-    &.pressed { background: #cccccc; }
+    &:not(.disabled):hover { background: #dddddd; }
+    &.pressed:not(.disabled) { background: #cccccc; }
+
+    &.disabled { color: #dddddd; pointer-events: none; }
 
     &.backspace {
         .icon { font-size: 30px; vertical-align: middle; }
@@ -39,7 +41,7 @@ body { margin: 0; }
     &.main{ background: #eeeeee; }
 }
 
-.m-stack{
+.m-stack {
     .triangle { position: relative; width: 0; height:0; display: inline-block; vertical-align: super;
         &.down { border-top: solid black 5px; border-left: solid transparent 5px; border-right: solid transparent 5px; }
     }
@@ -48,21 +50,38 @@ body { margin: 0; }
 .panel{ position: absolute; width:100%; height: 100%; top: 0;
     .innerPanel { position: absolute; width: 100%; background: #eeeeee; bottom:3px; }
 
-    &.historyPanel {
-        .content { width: 100%; height: 100%; overflow: hidden;
-            .scroll { width: 100%; height: ~"calc(100% - 50px)"; max-height: ~"calc(100% - 50px)"; overflow: auto;
-                &:empty::before { content: "There's no history yet"; padding: 10px; display: block; font-weight: bold; font-size: 1.25em; }
-                .history-state { text-align: right; margin: 10px 0px; padding-right: 20px;
-                    &:hover { background: #dddddd; }
-                    .top, .bottom { padding-top: 10px; }
-                    .top { font-size: 1.25em; }
-                    .bottom { font-size: 2.5em; }
-                }
+    .content { width: 100%; height: 100%; overflow: hidden;
+        .scroll { width: 100%; height: ~"calc(100% - 50px)"; max-height: ~"calc(100% - 50px)"; overflow: auto; }
+        .footer { width: 100%; height: 50px; text-align: right;
+            .trash { display: inline-block; position:relative; height: 100%; width:50px; font-size: 22px;
+                &:hover { background: #dddddd; }
+                .icon { position: absolute; width: 22px; height: 22px; top: 0; bottom: 0; left: 0; right: 0; margin: auto; }
             }
-            .footer { width: 100%; height: 50px; text-align: right;
-                .trash { display: inline-block; position:relative; height: 100%; width:50px; font-size: 22px;
-                    &:hover { background: #dddddd; }
-                    .icon { position: absolute; width: 22px; height: 22px; top: 0; bottom: 0; left: 0; right: 0; margin: auto; }
+        }
+    }
+
+
+    &.historyPanel {
+        .content .scroll {
+            &:empty::before { content: "There's no history yet"; padding: 10px; display: block; font-weight: bold; font-size: 1.25em; }
+            .history-state { text-align: right; margin: 10px 0px; padding-right: 20px;
+                &:hover { background: #dddddd; }
+                .top, .bottom { padding-top: 10px; }
+                .top { font-size: 1.25em; }
+                .bottom { font-size: 2.5em; }
+            }
+        }
+    }
+
+    &.memoryStackPanel {
+        .content .scroll {
+            &:empty::before { content: "There's nothing saved in memory"; padding: 10px; display: block; font-weight: bold; font-size: 1.25em; }
+            .memory-state { padding: 10px 0px 0px 0px; margin: 10px 0px;
+                &:hover { background: #dddddd; }
+                .value { text-align: right; padding: 10px 15px 15px 0px; font-weight: bold; font-size: 1.5em;}
+                .footer { height: 38px; }
+                .memoryClear, .memoryPlus, .memoryMinus { display: inline-block; padding:10px; margin-left: 20px; color: #4286f4;
+                    &:hover { background: #cccccc; color: #000000;}
                 }
             }
         }

@@ -288,4 +288,13 @@ describe('Token Manager', () => {
             expect(underTest.trigger.getCall(0).args[0]).to.equal(TokenManagerEvent.APPLIED_HISTORY);
         });
     });
+
+    describe('memoryClicked', () => {
+        it('should set the state to evaluated', () => {
+            underTest.state = TokenManagerState.NORMAL;
+            underTest.memoryClick();
+
+            expect(underTest.state).to.equal(TokenManagerState.EVALUATED);
+        });
+    });
 });

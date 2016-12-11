@@ -1,5 +1,5 @@
 import Panel from './Panel';
-import template from 'text!templates/history.tpl';
+import template from 'text!templates/panel.tpl';
 import HistoryManagerEvents from 'calculator/constant/HistoryManagerEvents';
 import History from 'calculator/lib/History';
 

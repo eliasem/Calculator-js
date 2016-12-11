@@ -10382,6 +10382,74 @@ define('calculator/lib/Calculations',["exports"], function (exports) {
 });
 //# sourceMappingURL=Calculations.js.map
 ;
+define('calculator/lib/actions/MemoryClear',["exports"], function (exports) {
+    "use strict";
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+
+    exports.default = function (memoryManager) {
+        memoryManager.clear();
+    };
+});
+//# sourceMappingURL=MemoryClear.js.map
+;
+define('calculator/lib/actions/MemoryMinus',["exports"], function (exports) {
+    "use strict";
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+
+    exports.default = function (tokenManager, memoryManager) {
+        tokenManager.memoryClick();
+        memoryManager.minus(null, tokenManager.answerStr);
+    };
+});
+//# sourceMappingURL=MemoryMinus.js.map
+;
+define('calculator/lib/actions/MemoryPlus',["exports"], function (exports) {
+    "use strict";
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+
+    exports.default = function (tokenManager, memoryManager) {
+        tokenManager.memoryClick();
+        memoryManager.plus(null, tokenManager.answerStr);
+    };
+});
+//# sourceMappingURL=MemoryPlus.js.map
+;
+define('calculator/lib/actions/MemoryRestore',["exports"], function (exports) {
+    "use strict";
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+
+    exports.default = function (tokenManager, memoryManager) {
+        tokenManager.push(memoryManager.getLast().value, { replace: true });
+    };
+});
+//# sourceMappingURL=MemoryRestore.js.map
+;
+define('calculator/lib/actions/MemorySave',["exports"], function (exports) {
+    "use strict";
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+
+    exports.default = function (tokenManager, memoryManager) {
+        tokenManager.memoryClick();
+        memoryManager.save(tokenManager.answerStr);
+    };
+});
+//# sourceMappingURL=MemorySave.js.map
+;
 define('calculator/lib/actions/ToggleClass',["exports"], function (exports) {
     "use strict";
 
@@ -10395,12 +10463,22 @@ define('calculator/lib/actions/ToggleClass',["exports"], function (exports) {
 });
 //# sourceMappingURL=ToggleClass.js.map
 ;
-define('calculator/config/actions',['exports', '../lib/actions/ToggleClass'], function (exports, _ToggleClass) {
+define('calculator/config/actions',['exports', '../lib/actions/MemoryClear', '../lib/actions/MemoryMinus', '../lib/actions/MemoryPlus', '../lib/actions/MemoryRestore', '../lib/actions/MemorySave', '../lib/actions/ToggleClass'], function (exports, _MemoryClear, _MemoryMinus, _MemoryPlus, _MemoryRestore, _MemorySave, _ToggleClass) {
     'use strict';
 
     Object.defineProperty(exports, "__esModule", {
         value: true
     });
+
+    var _MemoryClear2 = _interopRequireDefault(_MemoryClear);
+
+    var _MemoryMinus2 = _interopRequireDefault(_MemoryMinus);
+
+    var _MemoryPlus2 = _interopRequireDefault(_MemoryPlus);
+
+    var _MemoryRestore2 = _interopRequireDefault(_MemoryRestore);
+
+    var _MemorySave2 = _interopRequireDefault(_MemorySave);
 
     var _ToggleClass2 = _interopRequireDefault(_ToggleClass);
 
@@ -10411,6 +10489,11 @@ define('calculator/config/actions',['exports', '../lib/actions/ToggleClass'], fu
     }
 
     exports.default = {
+        'MemoryClear': _MemoryClear2.default,
+        'MemoryMinus': _MemoryMinus2.default,
+        'MemoryPlus': _MemoryPlus2.default,
+        'MemoryRestore': _MemoryRestore2.default,
+        'MemorySave': _MemorySave2.default,
         'ToggleClass': _ToggleClass2.default
     };
 });
@@ -11213,7 +11296,7 @@ define('text',['module'], function (module) {
 });
 
 
-define('text!templates/history.tpl',[],function () { return '<div class="content">\r\n    <div class="scroll"></div>\r\n    <div class="footer">\r\n        <div class="trash"><a class ="icon icon-bin"></a></div>\r\n    </div>\r\n</div>';});
+define('text!templates/panel.tpl',[],function () { return '<div class="content">\r\n    <div class="scroll"></div>\r\n    <div class="footer">\r\n        <div class="trash"><a class ="icon icon-bin"></a></div>\r\n    </div>\r\n</div>';});
 
 define('calculator/constant/HistoryManagerEvents',['exports'], function (exports) {
     'use strict';
@@ -11509,7 +11592,7 @@ define('calculator/lib/History',['exports', 'jquery', 'calculator/token', 'text!
 });
 //# sourceMappingURL=History.js.map
 ;
-define('calculator/lib/builder/HistoryPanel',['exports', './Panel', 'text!templates/history.tpl', 'calculator/constant/HistoryManagerEvents', 'calculator/lib/History'], function (exports, _Panel2, _history, _HistoryManagerEvents, _History) {
+define('calculator/lib/builder/HistoryPanel',['exports', './Panel', 'text!templates/panel.tpl', 'calculator/constant/HistoryManagerEvents', 'calculator/lib/History'], function (exports, _Panel2, _panel, _HistoryManagerEvents, _History) {
     'use strict';
 
     Object.defineProperty(exports, "__esModule", {
@@ -11518,7 +11601,7 @@ define('calculator/lib/builder/HistoryPanel',['exports', './Panel', 'text!templa
 
     var _Panel3 = _interopRequireDefault(_Panel2);
 
-    var _history2 = _interopRequireDefault(_history);
+    var _panel2 = _interopRequireDefault(_panel);
 
     var _HistoryManagerEvents2 = _interopRequireDefault(_HistoryManagerEvents);
 
@@ -11574,7 +11657,7 @@ define('calculator/lib/builder/HistoryPanel',['exports', './Panel', 'text!templa
             _this.historyManager = historyManager;
             _this.historyManager.on(_HistoryManagerEvents2.default.CHANGE, updateHistory, _this);
 
-            _this.$innerPanel.append(_history2.default);
+            _this.$innerPanel.append(_panel2.default);
             _this[$scroll] = _this.$innerPanel.find('.scroll');
             _this[$trash] = _this.$innerPanel.find('.trash');
 
@@ -11624,7 +11707,126 @@ define('calculator/lib/builder/HistoryPanel',['exports', './Panel', 'text!templa
 });
 //# sourceMappingURL=HistoryPanel.js.map
 ;
-define('calculator/lib/builder/layout',['exports', 'jquery', './Panel', './HistoryPanel'], function (exports, _jquery, _Panel, _HistoryPanel) {
+define('calculator/lib/builder/MemoryPanel',['exports', 'jquery', './Panel', 'text!templates/panel.tpl'], function (exports, _jquery, _Panel2, _panel) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+
+    var _jquery2 = _interopRequireDefault(_jquery);
+
+    var _Panel3 = _interopRequireDefault(_Panel2);
+
+    var _panel2 = _interopRequireDefault(_panel);
+
+    function _interopRequireDefault(obj) {
+        return obj && obj.__esModule ? obj : {
+            default: obj
+        };
+    }
+
+    function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+            throw new TypeError("Cannot call a class as a function");
+        }
+    }
+
+    function _possibleConstructorReturn(self, call) {
+        if (!self) {
+            throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+        }
+
+        return call && (typeof call === "object" || typeof call === "function") ? call : self;
+    }
+
+    function _inherits(subClass, superClass) {
+        if (typeof superClass !== "function" && superClass !== null) {
+            throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
+        }
+
+        subClass.prototype = Object.create(superClass && superClass.prototype, {
+            constructor: {
+                value: subClass,
+                enumerable: false,
+                writable: true,
+                configurable: true
+            }
+        });
+        if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+    }
+
+    var $scroll = Symbol('$scroll');
+    var $trash = Symbol('$trash');
+
+    var _class = function (_Panel) {
+        _inherits(_class, _Panel);
+
+        function _class(memoryManager, options) {
+            _classCallCheck(this, _class);
+
+            var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(_class).call(this, options));
+
+            _this.memoryManager = memoryManager;
+
+            _this.memoryManager.change(updateMemory, _this);
+
+            _this.$innerPanel.append(_panel2.default);
+            _this[$scroll] = _this.$innerPanel.find('.scroll');
+            _this[$trash] = _this.$innerPanel.find('.trash');
+
+            _this[$trash].on('click', function () {
+                _this.memoryManager.clear.call(_this.memoryManager);
+            });
+
+            buildMemories.call(_this);
+            updateTrash.call(_this);
+            return _this;
+        }
+
+        return _class;
+    }(_Panel3.default);
+
+    exports.default = _class;
+
+
+    function updateMemory() {
+        var stack = this.memoryManager.getMemoryStack();
+        var state = stack[stack.length - 1];
+
+        if (state) {
+            buildMemory.call(this, state);
+        } else {
+            this[$scroll].empty();
+        }
+
+        updateTrash.call(this);
+    }
+
+    function buildMemories() {
+        var _this2 = this;
+
+        var stack = this.memoryManager.getMemoryStack();
+
+        stack.forEach(function (value) {
+            return buildMemory.call(_this2, value);
+        });
+
+        updateTrash.call(this);
+    }
+
+    function buildMemory(view) {
+        this[$scroll].prepend(view.$el);
+    }
+
+    function updateTrash() {
+        var numberOfStates = this.memoryManager.getMemoryStack().length;
+        this[$trash].toggle(numberOfStates !== 0);
+    }
+});
+//# sourceMappingURL=MemoryPanel.js.map
+;
+define('calculator/lib/builder/layout',['exports', 'jquery', './Panel', './HistoryPanel', './MemoryPanel'], function (exports, _jquery, _Panel, _HistoryPanel, _MemoryPanel) {
     'use strict';
 
     Object.defineProperty(exports, "__esModule", {
@@ -11689,7 +11891,7 @@ define('calculator/lib/builder/layout',['exports', 'jquery', './Panel', './Histo
             this.$el.append($row);
         }
 
-        this.memoryStack = new _Panel2.default({ className: 'memoryStackPanel' });
+        this.memoryStack = new _MemoryPanel2.default(this.memoryManager, { className: 'memoryStackPanel' });
         this.history = new _HistoryPanel2.default(this.historyManager, { className: 'historyPanel' });
 
         this.$el.append(this.memoryStack.$el);
@@ -11701,6 +11903,8 @@ define('calculator/lib/builder/layout',['exports', 'jquery', './Panel', './Histo
     var _Panel2 = _interopRequireDefault(_Panel);
 
     var _HistoryPanel2 = _interopRequireDefault(_HistoryPanel);
+
+    var _MemoryPanel2 = _interopRequireDefault(_MemoryPanel);
 
     function _interopRequireDefault(obj) {
         return obj && obj.__esModule ? obj : {
@@ -11782,7 +11986,7 @@ define('calculator/lib/Layout',['exports', 'jquery', './behaviours/Referencable'
     var Layout = function (_Referencable) {
         _inherits(Layout, _Referencable);
 
-        function Layout(tokenManager, historyManager, config) {
+        function Layout(tokenManager, historyManager, memoryManager, config) {
             _classCallCheck(this, Layout);
 
             var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Layout).call(this));
@@ -11790,6 +11994,7 @@ define('calculator/lib/Layout',['exports', 'jquery', './behaviours/Referencable'
             _this.buttons = [];
             _this.tokenManager = tokenManager;
             _this.historyManager = historyManager;
+            _this.memoryManager = memoryManager;
 
             createLayout.call(_this, config);
 
@@ -12409,6 +12614,11 @@ define('calculator/lib/managers/TokenManager',['exports', 'calculator/token', 'c
 
                 this.trigger(_TokenManagerEvents2.default.APPLIED_HISTORY, (0, _token.toString)(history.tokens), (0, _token.evaluateTokens)(history.tokens));
             }
+        }, {
+            key: 'memoryClick',
+            value: function memoryClick() {
+                updateState.call(this, _TokenManagerStates2.default.EVALUATED);
+            }
         }]);
 
         return _class;
@@ -12609,6 +12819,506 @@ define('calculator/lib/managers/HistoryManager',['exports', 'calculator/constant
 });
 //# sourceMappingURL=HistoryManager.js.map
 ;
+define('calculator/constant/HistoryStateEvents',['exports'], function (exports) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    var HistoryStateEvents = {};
+
+    Object.defineProperties(HistoryStateEvents, {
+        CLEAR: { value: 'clear' },
+        PLUS: { value: 'plus' },
+        MINUS: { value: 'minus' }
+    });
+
+    exports.default = HistoryStateEvents;
+});
+//# sourceMappingURL=HistoryStateEvents.js.map
+;
+
+define('text!templates/memoryState.tpl',[],function () { return '<div class="memory-state">\r\n    <div class="value"></div>\r\n    <div class="footer">\r\n        <div class="memoryClear">MC</div>\r\n        <div class="memoryPlus">M+</div>\r\n        <div class="memoryMinus">M-</div>\r\n    </div>\r\n</div>';});
+
+define('calculator/lib/Memory',['exports', 'jquery', 'calculator/constant/HistoryStateEvents', 'text!templates/memoryState.tpl'], function (exports, _jquery, _HistoryStateEvents, _memoryState) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+
+    var _jquery2 = _interopRequireDefault(_jquery);
+
+    var _HistoryStateEvents2 = _interopRequireDefault(_HistoryStateEvents);
+
+    var _memoryState2 = _interopRequireDefault(_memoryState);
+
+    function _interopRequireDefault(obj) {
+        return obj && obj.__esModule ? obj : {
+            default: obj
+        };
+    }
+
+    function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+            throw new TypeError("Cannot call a class as a function");
+        }
+    }
+
+    var _createClass = function () {
+        function defineProperties(target, props) {
+            for (var i = 0; i < props.length; i++) {
+                var descriptor = props[i];
+                descriptor.enumerable = descriptor.enumerable || false;
+                descriptor.configurable = true;
+                if ("value" in descriptor) descriptor.writable = true;
+                Object.defineProperty(target, descriptor.key, descriptor);
+            }
+        }
+
+        return function (Constructor, protoProps, staticProps) {
+            if (protoProps) defineProperties(Constructor.prototype, protoProps);
+            if (staticProps) defineProperties(Constructor, staticProps);
+            return Constructor;
+        };
+    }();
+
+    var $value = Symbol('$value');
+
+    var _class = function () {
+        function _class(value) {
+            _classCallCheck(this, _class);
+
+            this.$el = (0, _jquery2.default)(_memoryState2.default);
+
+            this[$value] = this.$el.find('.value');
+            this.value = parseFloat(value);
+            build.call(this);
+        }
+
+        _createClass(_class, [{
+            key: 'plusToValue',
+            value: function plusToValue(toAdd) {
+                this.value += parseFloat(toAdd);
+                updateValueInView.call(this);
+            }
+        }, {
+            key: 'minusFromValue',
+            value: function minusFromValue(toMinus) {
+                this.value -= parseFloat(toMinus);
+                updateValueInView.call(this);
+            }
+        }]);
+
+        return _class;
+    }();
+
+    exports.default = _class;
+
+    function build() {
+        updateValueInView.call(this);
+        this.$el.find('.memoryClear').on('click', clear.bind(this));
+        this.$el.find('.memoryPlus').on('click', plus.bind(this));
+        this.$el.find('.memoryMinus').on('click', minus.bind(this));
+    }
+
+    function updateValueInView() {
+        this[$value].html(this.value);
+    }
+
+    function clear() {
+        this.$el.remove();
+        (0, _jquery2.default)(this).trigger(_HistoryStateEvents2.default.CLEAR, this);
+    }
+
+    function plus() {
+        (0, _jquery2.default)(this).trigger(_HistoryStateEvents2.default.PLUS, this);
+    }
+
+    function minus() {
+        (0, _jquery2.default)(this).trigger(_HistoryStateEvents2.default.MINUS, this);
+    }
+});
+//# sourceMappingURL=Memory.js.map
+;
+define('calculator/constant/MemoryManagerEvents',['exports'], function (exports) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    var MemoryManagerEvents = {};
+
+    Object.defineProperties(MemoryManagerEvents, {
+        CHANGE: { value: 'change' },
+        EVALUATION: { value: 'evaluation' },
+        APPLIED_HISTORY: { value: 'applied_history' }
+    });
+
+    exports.default = MemoryManagerEvents;
+});
+//# sourceMappingURL=MemoryManagerEvents.js.map
+;
+define('calculator/lib/managers/MemoryManager',['exports', 'jquery', 'calculator/lib/event/EventApi', 'calculator/lib/Memory', 'calculator/constant/MemoryManagerEvents', 'calculator/constant/HistoryStateEvents'], function (exports, _jquery, _EventApi, _Memory, _MemoryManagerEvents, _HistoryStateEvents) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+
+    var _jquery2 = _interopRequireDefault(_jquery);
+
+    var _EventApi2 = _interopRequireDefault(_EventApi);
+
+    var _Memory2 = _interopRequireDefault(_Memory);
+
+    var _MemoryManagerEvents2 = _interopRequireDefault(_MemoryManagerEvents);
+
+    var _HistoryStateEvents2 = _interopRequireDefault(_HistoryStateEvents);
+
+    function _interopRequireDefault(obj) {
+        return obj && obj.__esModule ? obj : {
+            default: obj
+        };
+    }
+
+    function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+            throw new TypeError("Cannot call a class as a function");
+        }
+    }
+
+    var _createClass = function () {
+        function defineProperties(target, props) {
+            for (var i = 0; i < props.length; i++) {
+                var descriptor = props[i];
+                descriptor.enumerable = descriptor.enumerable || false;
+                descriptor.configurable = true;
+                if ("value" in descriptor) descriptor.writable = true;
+                Object.defineProperty(target, descriptor.key, descriptor);
+            }
+        }
+
+        return function (Constructor, protoProps, staticProps) {
+            if (protoProps) defineProperties(Constructor.prototype, protoProps);
+            if (staticProps) defineProperties(Constructor, staticProps);
+            return Constructor;
+        };
+    }();
+
+    var eventApi = Symbol('eventApi');
+    var memoryStack = Symbol('memoryStack');
+    var tokenManager = Symbol('tokenManager');
+
+    var _class = function () {
+        function _class(tManager) {
+            _classCallCheck(this, _class);
+
+            this[eventApi] = new _EventApi2.default();
+            this[memoryStack] = [];
+            this[tokenManager] = tManager;
+        }
+
+        _createClass(_class, [{
+            key: 'change',
+            value: function change(funct, context) {
+                this.on(_MemoryManagerEvents2.default.CHANGE, funct, context);
+            }
+        }, {
+            key: 'on',
+            value: function on(eventName, funct, context) {
+                this[eventApi].on(eventName, funct, context);
+            }
+        }, {
+            key: 'trigger',
+            value: function trigger(eventName) {
+                for (var _len = arguments.length, arg = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+                    arg[_key - 1] = arguments[_key];
+                }
+
+                this[eventApi].trigger.apply(this[eventApi], [eventName].concat(arg));
+            }
+        }, {
+            key: 'getMemoryStack',
+            value: function getMemoryStack() {
+                return this[memoryStack];
+            }
+        }, {
+            key: 'getLast',
+            value: function getLast() {
+                var stack = this.getMemoryStack();
+                return stack[stack.length - 1];
+            }
+        }, {
+            key: 'clear',
+            value: function clear(state) {
+                var stack = void 0;
+
+                if (state) {
+                    state.$el.remove();
+                    stack = removeAtIndex(this[memoryStack], this[memoryStack].indexOf(state));
+                } else {
+                    this[memoryStack].forEach(function (v) {
+                        return v.$el.remove();
+                    });
+                    stack = [];
+                }
+
+                this[memoryStack] = stack;
+                this.trigger(_MemoryManagerEvents2.default.CHANGE);
+            }
+        }, {
+            key: 'restore',
+            value: function restore() {
+                var length = this[memoryStack].length;
+                if (length === 0) {
+                    return null;
+                }
+                return this[memoryStack][length - 1].value;
+            }
+        }, {
+            key: 'plus',
+            value: function plus(state, value) {
+                var length = this[memoryStack].length;
+                value = value === undefined ? this[tokenManager].answerStr : value;
+                if (length === 0) {
+                    this.save(value.toString());
+                    return;
+                }
+                var index = state ? this[memoryStack].indexOf(state) : length - 1;
+                this[memoryStack][index].plusToValue(parseFloat(value));
+            }
+        }, {
+            key: 'minus',
+            value: function minus(state, value) {
+                var length = this[memoryStack].length;
+                value = value === undefined ? this[tokenManager].answerStr : value;
+                if (length === 0) {
+                    this.save((-value).toString());
+                    return;
+                }
+                var index = state ? this[memoryStack].indexOf(state) : length - 1;
+                this[memoryStack][index].minusFromValue(parseFloat(value));
+            }
+        }, {
+            key: 'save',
+            value: function save(value) {
+                var _this = this;
+
+                var view = new _Memory2.default(value);
+                var $view = (0, _jquery2.default)(view);
+
+                $view.on(_HistoryStateEvents2.default.CLEAR, function () {
+                    _this.clear.call(_this, view);
+                });
+                $view.on(_HistoryStateEvents2.default.PLUS, function () {
+                    _this.plus.call(_this, view);
+                });
+                $view.on(_HistoryStateEvents2.default.MINUS, function () {
+                    _this.minus.call(_this, view);
+                });
+
+                this[memoryStack].push(view);
+                this.trigger(_MemoryManagerEvents2.default.CHANGE);
+            }
+        }]);
+
+        return _class;
+    }();
+
+    exports.default = _class;
+
+
+    function removeAtIndex(array, index) {
+        return array.slice(0, index).concat(array.slice(index + 1));
+    }
+});
+//# sourceMappingURL=MemoryManager.js.map
+;
+define('calculator/lib/changes/ToggleDisable',['exports'], function (exports) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+
+    exports.default = function (manager, button) {
+        button.$el.toggleClass('disabled', manager.getMemoryStack().length === 0);
+    };
+});
+//# sourceMappingURL=ToggleDisable.js.map
+;
+define('calculator/config/changes',['exports', '../lib/changes/ToggleDisable'], function (exports, _ToggleDisable) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+
+    var _ToggleDisable2 = _interopRequireDefault(_ToggleDisable);
+
+    function _interopRequireDefault(obj) {
+        return obj && obj.__esModule ? obj : {
+            default: obj
+        };
+    }
+
+    exports.default = {
+        'ToggleDisable': _ToggleDisable2.default
+    };
+});
+//# sourceMappingURL=changes.js.map
+;
+define('calculator/lib/managers/ChangeManager',['exports', 'calculator/lib/event/EventApi', 'calculator/lib/behaviours/Referencable', 'calculator/config/changes'], function (exports, _EventApi, _Referencable2, _changes) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+
+    var _EventApi2 = _interopRequireDefault(_EventApi);
+
+    var _Referencable3 = _interopRequireDefault(_Referencable2);
+
+    var _changes2 = _interopRequireDefault(_changes);
+
+    function _interopRequireDefault(obj) {
+        return obj && obj.__esModule ? obj : {
+            default: obj
+        };
+    }
+
+    function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+            throw new TypeError("Cannot call a class as a function");
+        }
+    }
+
+    function _possibleConstructorReturn(self, call) {
+        if (!self) {
+            throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+        }
+
+        return call && (typeof call === "object" || typeof call === "function") ? call : self;
+    }
+
+    function _inherits(subClass, superClass) {
+        if (typeof superClass !== "function" && superClass !== null) {
+            throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
+        }
+
+        subClass.prototype = Object.create(superClass && superClass.prototype, {
+            constructor: {
+                value: subClass,
+                enumerable: false,
+                writable: true,
+                configurable: true
+            }
+        });
+        if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+    }
+
+    var changes = Symbol('changes');
+
+    var _class = function (_Referencable) {
+        _inherits(_class, _Referencable);
+
+        function _class(tokenManager, memoryManager, config) {
+            _classCallCheck(this, _class);
+
+            var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(_class).call(this));
+
+            _this[changes] = _changes2.default;
+            _this.tokenManager = tokenManager;
+            _this.memoryManager = memoryManager;
+
+            var _iteratorNormalCompletion = true;
+            var _didIteratorError = false;
+            var _iteratorError = undefined;
+
+            try {
+                for (var _iterator = config.toolbar.buttons[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                    var _button = _step.value;
+
+                    processChanges.call(_this, _button);
+                }
+            } catch (err) {
+                _didIteratorError = true;
+                _iteratorError = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion && _iterator.return) {
+                        _iterator.return();
+                    }
+                } finally {
+                    if (_didIteratorError) {
+                        throw _iteratorError;
+                    }
+                }
+            }
+
+            for (var row = 0; row < config.rows.length; row++) {
+                var _iteratorNormalCompletion2 = true;
+                var _didIteratorError2 = false;
+                var _iteratorError2 = undefined;
+
+                try {
+                    for (var _iterator2 = config.rows[row].buttons[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                        var button = _step2.value;
+
+                        processChanges.call(_this, button);
+                    }
+                } catch (err) {
+                    _didIteratorError2 = true;
+                    _iteratorError2 = err;
+                } finally {
+                    try {
+                        if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                            _iterator2.return();
+                        }
+                    } finally {
+                        if (_didIteratorError2) {
+                            throw _iteratorError2;
+                        }
+                    }
+                }
+            }
+            return _this;
+        }
+
+        return _class;
+    }(_Referencable3.default);
+
+    exports.default = _class;
+
+
+    function processChanges(button) {
+        var _this2 = this;
+
+        var _loop = function _loop(change) {
+            if (!button.changes.hasOwnProperty(change)) {
+                return 'continue';
+            }
+            var manager = _this2.getReference(button.changes[change].on);
+            var changeFunc = getChange.call(_this2, button.changes[change].changeName);
+            manager.change(function () {
+                changeFunc(manager, button);
+            });
+        };
+
+        for (var change in button.changes) {
+            var _ret = _loop(change);
+
+            if (_ret === 'continue') continue;
+        }
+    }
+
+    function getChange(changeName) {
+        return this[changes][changeName];
+    }
+});
+//# sourceMappingURL=ChangeManager.js.map
+;
 define('calculator/config/buttons',['exports'], function (exports) {
     'use strict';
 
@@ -12617,18 +13327,44 @@ define('calculator/config/buttons',['exports'], function (exports) {
     });
     exports.default = {
         'HISTORY': { 'html': '<span class="icon icon-history">', 'class': 'history',
-            actions: {
-                'toggle': { actionName: 'ToggleClass', actionArgs: ['&history', 'displayNone'] }
+            'actions': {
+                'toggle': { 'actionName': 'ToggleClass', 'actionArgs': ['&history', 'displayNone'] }
             }
         },
-        'MC': { 'html': 'MC', 'class': 'mc' },
-        'MR': { 'html': 'MR', 'class': 'mr' },
-        'M_PLUS': { 'html': 'M+', 'class': 'm-plus' },
-        'M_MINUS': { 'html': 'M-', 'class': 'm-minus' },
-        'MS': { 'html': 'MS', 'class': 'ms' },
+        'MC': { 'html': 'MC', 'class': 'mc disabled',
+            'actions': {
+                'memoryClear': { 'actionName': 'MemoryClear', 'actionArgs': ['&memoryManager'] }
+            },
+            'changes': {
+                'toggleDisable': { 'changeName': 'ToggleDisable', 'on': '&memoryManager' }
+            }
+        },
+        'MR': { 'html': 'MR', 'class': 'mr disabled',
+            'actions': {
+                'memoryRestore': { 'actionName': 'MemoryRestore', 'actionArgs': ['&tokenManager', '&memoryManager'] }
+            },
+            'changes': {
+                'toggleDisable': { 'changeName': 'ToggleDisable', 'on': '&memoryManager' }
+            }
+        },
+        'M_PLUS': { 'html': 'M+', 'class': 'm-plus',
+            'actions': {
+                'memoryPlus': { 'actionName': 'MemoryPlus', 'actionArgs': ['&tokenManager', '&memoryManager'] }
+            }
+        },
+        'M_MINUS': { 'html': 'M-', 'class': 'm-minus',
+            'actions': {
+                'memoryMinus': { 'actionName': 'MemoryMinus', 'actionArgs': ['&tokenManager', '&memoryManager'] }
+            }
+        },
+        'MS': { 'html': 'MS', 'class': 'ms',
+            'actions': {
+                'memorySave': { 'actionName': 'MemorySave', 'actionArgs': ['&tokenManager', '&memoryManager'] }
+            }
+        },
         'M_STACK': { 'html': 'M <div class="triangle down">', 'class': 'm-stack',
-            actions: {
-                'toggle': { actionName: 'ToggleClass', actionArgs: ['&memoryStack', 'displayNone'] }
+            'actions': {
+                'toggle': { 'actionName': 'ToggleClass', 'actionArgs': ['&memoryStack', 'displayNone'] }
             }
         },
         'PERCENT': { 'html': '%', 'class': 'percent' },
@@ -12636,99 +13372,99 @@ define('calculator/config/buttons',['exports'], function (exports) {
         'SQUARED': { 'html': '<span class="math">x</span><sup>2</sup>', 'class': 'squared' },
         'FRAC': { 'html': '<sup>1</sup>/<span class="math">x</span>', 'class': 'frac' },
         'CE': { 'html': 'CE', 'class': 'ce',
-            calculations: {
-                'clear': { calculationName: 'ClearLastTokens' }
+            'calculations': {
+                'clear': { 'calculationName': 'ClearLastTokens' }
             }
         },
         'C': { 'html': 'C', 'class': 'c',
-            calculations: {
-                'clear': { calculationName: 'ClearTokens' }
+            'calculations': {
+                'clear': { 'calculationName': 'ClearTokens' }
             }
         },
         'BACKSPACE': { 'html': '<span class="icon icon-backspace">', 'class': 'backspace',
-            calculations: {
-                'backspace': { calculationName: 'Backspace' }
+            'calculations': {
+                'backspace': { 'calculationName': 'Backspace' }
             }
         },
         'DIVIDE': { 'html': '&divide;', 'class': 'divide', 'mathSymbol': '&divide;',
-            calculations: {
-                'add': { calculationName: 'AddArithmeticToken' }
+            'calculations': {
+                'add': { 'calculationName': 'AddArithmeticToken' }
             }
         },
         'SEVEN': { 'html': '7', 'class': 'number-7', 'mathSymbol': '7',
-            calculations: {
-                'add': { calculationName: 'AddNumberToken' }
+            'calculations': {
+                'add': { 'calculationName': 'AddNumberToken' }
             }
         },
         'EIGHT': { 'html': '8', 'class': 'number-8', 'mathSymbol': '8',
-            calculations: {
-                'add': { calculationName: 'AddNumberToken' }
+            'calculations': {
+                'add': { 'calculationName': 'AddNumberToken' }
             }
         },
         'NINE': { 'html': '9', 'class': 'number-9', 'mathSymbol': '9',
-            calculations: {
-                'add': { calculationName: 'AddNumberToken' }
+            'calculations': {
+                'add': { 'calculationName': 'AddNumberToken' }
             }
         },
         'TIMES': { 'html': '&times;', 'class': 'times', 'mathSymbol': '&times;',
-            calculations: {
-                'add': { calculationName: 'AddArithmeticToken' }
+            'calculations': {
+                'add': { 'calculationName': 'AddArithmeticToken' }
             }
         },
         'FOUR': { 'html': '4', 'class': 'number-4', 'mathSymbol': '4',
-            calculations: {
-                'add': { calculationName: 'AddNumberToken' }
+            'calculations': {
+                'add': { 'calculationName': 'AddNumberToken' }
             }
         },
         'FIVE': { 'html': '5', 'class': 'number-5', 'mathSymbol': '5',
-            calculations: {
-                'add': { calculationName: 'AddNumberToken' }
+            'calculations': {
+                'add': { 'calculationName': 'AddNumberToken' }
             }
         },
         'SIX': { 'html': '6', 'class': 'number-6', 'mathSymbol': '6',
-            calculations: {
-                'add': { calculationName: 'AddNumberToken' }
+            'calculations': {
+                'add': { 'calculationName': 'AddNumberToken' }
             }
         },
         'MINUS': { 'html': '-', 'class': 'minus', 'mathSymbol': '-',
-            calculations: {
-                'add': { calculationName: 'AddArithmeticToken' }
+            'calculations': {
+                'add': { 'calculationName': 'AddArithmeticToken' }
             }
         },
         'ONE': { 'html': '1', 'class': 'number-1', 'mathSymbol': '1',
-            calculations: {
-                'add': { calculationName: 'AddNumberToken' }
+            'calculations': {
+                'add': { 'calculationName': 'AddNumberToken' }
             }
         },
         'TWO': { 'html': '2', 'class': 'number-2', 'mathSymbol': '2',
-            calculations: {
-                'add': { calculationName: 'AddNumberToken' }
+            'calculations': {
+                'add': { 'calculationName': 'AddNumberToken' }
             }
         },
         'THREE': { 'html': '3', 'class': 'number-3', 'mathSymbol': '3',
-            calculations: {
-                'add': { calculationName: 'AddNumberToken' }
+            'calculations': {
+                'add': { 'calculationName': 'AddNumberToken' }
             }
         },
         'PLUS': { 'html': '+', 'class': 'plus', 'mathSymbol': '+',
-            calculations: {
-                'add': { calculationName: 'AddArithmeticToken' }
+            'calculations': {
+                'add': { 'calculationName': 'AddArithmeticToken' }
             }
         },
         'PLUS_MINUS': { 'html': '&plusmn;', 'class': 'plus-minus' },
         'ZERO': { 'html': '0', 'class': 'number-0', 'mathSymbol': '0',
-            calculations: {
-                'add': { calculationName: 'AddNumberToken' }
+            'calculations': {
+                'add': { 'calculationName': 'AddNumberToken' }
             }
         },
         'DECIMAL': { 'html': '.', 'class': 'decimal', 'mathSymbol': '.',
-            calculations: {
-                'add': { calculationName: 'AddNumberToken' }
+            'calculations': {
+                'add': { 'calculationName': 'AddNumberToken' }
             }
         },
         'EQUAL': { 'html': '=', 'class': 'equal',
-            calculations: {
-                'evaluate': { calculationName: 'Evaluate' }
+            'calculations': {
+                'evaluate': { 'calculationName': 'Evaluate' }
             }
         }
     };
@@ -12765,6 +13501,7 @@ define('calculator/lib/Button',['exports', 'jquery'], function (exports, _jquery
         this.mathSymbol = config.mathSymbol;
         this.actions = config.actions;
         this.calculations = config.calculations;
+        this.changes = config.changes;
 
         this.$el = (0, _jquery2.default)('<div class=\'calc-button ' + this.class + '\'>' + this.html + '</div>');
 
@@ -17373,7 +18110,7 @@ process.umask = function() { return 0; };
 
 define("babelPolyfill", function(){});
 
-define('main',['exports', 'jquery', 'calculator/lib/Actions', 'calculator/lib/Calculations', 'calculator/config/actions', 'calculator/config/calculations', 'calculator/lib/Layout', 'calculator/lib/managers/CalculationManager', 'calculator/lib/managers/ActionManager', 'calculator/lib/managers/TokenManager', 'calculator/lib/managers/HistoryManager', 'calculator/config/standard', 'babelPolyfill'], function (exports, _jquery, _Actions, _Calculations, _actions, _calculations, _Layout, _CalculationManager, _ActionManager, _TokenManager, _HistoryManager, _standard) {
+define('main',['exports', 'jquery', 'calculator/lib/Actions', 'calculator/lib/Calculations', 'calculator/config/actions', 'calculator/config/calculations', 'calculator/lib/Layout', 'calculator/lib/managers/CalculationManager', 'calculator/lib/managers/ActionManager', 'calculator/lib/managers/TokenManager', 'calculator/lib/managers/HistoryManager', 'calculator/lib/managers/MemoryManager', 'calculator/lib/managers/ChangeManager', 'calculator/config/standard', 'babelPolyfill'], function (exports, _jquery, _Actions, _Calculations, _actions, _calculations, _Layout, _CalculationManager, _ActionManager, _TokenManager, _HistoryManager, _MemoryManager, _ChangeManager, _standard) {
         'use strict';
 
         Object.defineProperty(exports, "__esModule", {
@@ -17400,6 +18137,10 @@ define('main',['exports', 'jquery', 'calculator/lib/Actions', 'calculator/lib/Ca
 
         var _HistoryManager2 = _interopRequireDefault(_HistoryManager);
 
+        var _MemoryManager2 = _interopRequireDefault(_MemoryManager);
+
+        var _ChangeManager2 = _interopRequireDefault(_ChangeManager);
+
         var _standard2 = _interopRequireDefault(_standard);
 
         function _interopRequireDefault(obj) {
@@ -17417,17 +18158,21 @@ define('main',['exports', 'jquery', 'calculator/lib/Actions', 'calculator/lib/Ca
         var _class = function _class(options) {
                 _classCallCheck(this, _class);
 
+                var mode = _standard2.default;
                 this.$el = (0, _jquery2.default)('<div class="calculator">');
 
                 this.tokenManager = new _TokenManager2.default();
                 this.historyManager = new _HistoryManager2.default(this.tokenManager);
-                this.layout = new _Layout2.default(this.tokenManager, this.historyManager, _standard2.default);
+                this.memoryManager = new _MemoryManager2.default(this.tokenManager);
+                this.layout = new _Layout2.default(this.tokenManager, this.historyManager, this.memoryManager, mode);
 
                 this.actions = new _Actions2.default(_actions2.default);
                 this.calculations = new _Calculations2.default(_calculations2.default);
 
                 this.calculationManager = new _CalculationManager2.default(this.calculations, this.tokenManager);
                 this.actionManager = new _ActionManager2.default(this.actions, this.layout);
+
+                this.changeManager = new _ChangeManager2.default(this.tokenManager, this.memoryManager, mode);
 
                 registerButtons.call(this);
 

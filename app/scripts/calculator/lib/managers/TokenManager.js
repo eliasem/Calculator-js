@@ -109,6 +109,10 @@ export default class {
 
         this.trigger(TokenManagerEvent.APPLIED_HISTORY, toString(history.tokens), evaluateTokens(history.tokens));
     }
+
+    memoryClick(){
+        updateState.call(this, TokenManagerState.EVALUATED);
+    }
 }
 
 function createAccessors(){

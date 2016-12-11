@@ -1,13 +1,16 @@
 import 'specs/lib/Button.spec';
 import 'specs/lib/behaviours/Referencable.spec';
 import 'specs/lib/builder/HistoryPanel.spec';
+import 'specs/lib/builder/MemoryPanel.spec';
 import 'specs/lib/builder/Panel.spec';
 import 'specs/lib/calculations/AddArithmeticToken.spec';
 import 'specs/lib/calculations/AddNumberToken.spec';
 import 'specs/lib/event/EventApi.spec';
 import 'specs/lib/managers/ActionManager.spec';
 import 'specs/lib/managers/CalculationManager.spec';
+import 'specs/lib/managers/ChangeManager.spec';
 import 'specs/lib/managers/HistoryManager.spec';
+import 'specs/lib/managers/MemoryManager.spec';
 import 'specs/lib/managers/TokenManager.spec';
 import 'specs/utils.spec';
 import 'specs/token.spec';

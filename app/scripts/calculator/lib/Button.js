@@ -8,6 +8,7 @@ export default class {
         this.mathSymbol = config.mathSymbol;
         this.actions = config.actions;
         this.calculations = config.calculations;
+        this.changes = config.changes;
 
         this.$el = $(`<div class='calc-button ${this.class}'>${this.html}</div>`);
 

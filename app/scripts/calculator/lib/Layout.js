@@ -6,11 +6,12 @@ import buildLayout from './builder/layout';
 
 
 export default class Layout extends Referencable {
-    constructor(tokenManager, historyManager, config){
+    constructor(tokenManager, historyManager, memoryManager, config){
         super();
         this.buttons = [];
         this.tokenManager = tokenManager;
         this.historyManager = historyManager;
+        this.memoryManager = memoryManager;
 
         createLayout.call(this, config);
 

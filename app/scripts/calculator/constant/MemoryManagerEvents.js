@@ -1,9 +1,7 @@
 let MemoryManagerEvents = {};
 
 Object.defineProperties(MemoryManagerEvents, {
-    CHANGE: { value: 'change' },
-    EVALUATION: { value: 'evaluation' },
-    APPLIED_HISTORY: { value: 'applied_history' }
+    CHANGE: { value: 'change' }
 });
 
 export default MemoryManagerEvents;

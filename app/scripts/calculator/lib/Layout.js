@@ -19,7 +19,7 @@ export default class Layout extends Referencable {
 
         this.tokenManager.change(renderExpression, this);
         this.tokenManager.change(renderAnswer, this);
-        this.tokenManager.appliedHistory(renderCustomExpressionAndAnswer, this);
+        this.tokenManager.custom(renderCustomExpressionAndAnswer, this);
         this.tokenManager.evaluation(renderEvaluationAnswer, this);
         renderAnswer.call(this);
     }

@@ -224,37 +224,6 @@ describe('Token Manager', () => {
         });
     });
 
-    describe('backspace', () => {
-
-        it('should add 0 if pressed at least once', () => {
-            underTest.push('9', {replace:true});
-            underTest.backspace();
-
-            expect(underTest.tokens).to.eql(['0']);
-        });
-
-        it('should go up to the last operator', () => {
-            underTest.push('9', {replace:true});
-            underTest.push('+');
-            underTest.push('1');
-            underTest.backspace();
-
-            expect(underTest.tokens).to.eql(['9', '+', '0']);
-        });
-
-        it('should not go past last operator', () => {
-            underTest.push('9', {replace:true});
-            underTest.push('+');
-            underTest.push('1');
-            underTest.backspace();
-            underTest.backspace();
-            underTest.backspace();
-            underTest.backspace();
-
-            expect(underTest.tokens).to.eql(['9', '+', '0']);
-        });
-    });
-
     describe('isLastToken', () => {
         it('should return if tokens is empty', () => {
             underTest.tokens = [];
@@ -285,7 +254,7 @@ describe('Token Manager', () => {
             underTest.applyHistory({tokens: ['20', '+', '6' ]});
 
             expect(underTest.state).to.equal(TokenManagerState.NORMAL);
-            expect(underTest.trigger.getCall(0).args[0]).to.equal(TokenManagerEvent.APPLIED_HISTORY);
+            expect(underTest.trigger.getCall(0).args[0]).to.equal(TokenManagerEvent.CUSTOM);
         });
     });
 

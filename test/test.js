@@ -5,6 +5,8 @@ import 'specs/lib/builder/MemoryPanel.spec';
 import 'specs/lib/builder/Panel.spec';
 import 'specs/lib/calculations/AddArithmeticToken.spec';
 import 'specs/lib/calculations/AddNumberToken.spec';
+import 'specs/lib/calculations/Backspace.spec';
+import 'specs/lib/calculations/Percent.spec';
 import 'specs/lib/event/EventApi.spec';
 import 'specs/lib/managers/ActionManager.spec';
 import 'specs/lib/managers/CalculationManager.spec';

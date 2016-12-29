@@ -42,7 +42,11 @@ export default {
             'toggle': { 'actionName': 'ToggleClass', 'actionArgs': ['&memoryStack', 'displayNone']}
         }
     },
-    'PERCENT' : { 'html': '%', 'class': 'percent' },
+    'PERCENT' : { 'html': '%', 'class': 'percent',
+        'calculations': {
+            'percent': { 'calculationName': 'Percent' }
+        }
+    },
     'SQRT' : { 'html': '&radic;', 'class': 'sqrt' },
     'SQUARED' : { 'html': '<span class="math">x</span><sup>2</sup>', 'class': 'squared' },
     'FRAC' : { 'html': '<sup>1</sup>/<span class="math">x</span>', 'class': 'frac' },

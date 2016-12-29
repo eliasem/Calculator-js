@@ -42,6 +42,16 @@ export function evaluateTokens(tokens){
     return chain.done();
 }
 
+export function getLastOperatorIndex(tokens){
+    var operatorIndex = -1;
+    operatorIndex =  Math.max(tokens.lastIndexOf('+'), operatorIndex);
+    operatorIndex =  Math.max(tokens.lastIndexOf('-'), operatorIndex);
+    operatorIndex =  Math.max(tokens.lastIndexOf('&times;'), operatorIndex);
+    operatorIndex =  Math.max(tokens.lastIndexOf('&divide;'), operatorIndex);
+
+    return operatorIndex;
+}
+
 function isOperator(token){
     return token === '+' || token === '-' || token === '&times;' || token === '&divide;';
 }

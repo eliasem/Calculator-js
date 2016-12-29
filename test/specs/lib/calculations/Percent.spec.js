@@ -2,7 +2,7 @@ import sinon from 'sinon';
 import TokenManager from 'calculator/lib/managers/TokenManager';
 import percent from 'calculator/lib/calculations/Percent';
 
-describe('Backspace', () => {
+describe('Percent', () => {
     let tokenManager;
 
     beforeEach(() => {

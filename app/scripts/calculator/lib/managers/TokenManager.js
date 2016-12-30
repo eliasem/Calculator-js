@@ -1,4 +1,4 @@
-import {evaluateTokens, toString} from 'calculator/token';
+import {evaluateTokens, toString, getLastOperatorIndex} from 'calculator/token';
 import TokenManagerState from 'calculator/constant/TokenManagerStates';
 import TokenManagerEvent from 'calculator/constant/TokenManagerEvents';
 import EventApi from 'calculator/lib/event/EventApi';
@@ -25,8 +25,8 @@ export default class {
         this[eventApi].on(TokenManagerEvent.EVALUATION, funct, context);
     }
 
-    appliedHistory(funct, context){
-        this[eventApi].on(TokenManagerEvent.APPLIED_HISTORY, funct, context);
+    custom(funct, context){
+        this[eventApi].on(TokenManagerEvent.CUSTOM, funct, context);
     }
 
     trigger(eventName, ...arg){
@@ -73,13 +73,26 @@ export default class {
         return false;
     }
 
+    applyHistory(history){
+        updateState.call(this, TokenManagerState.NORMAL);
+
+        this.tokens.splice(0);
+        this.tokens.push.apply(this.tokens, history.tokens);
+
+        this.trigger(TokenManagerEvent.CUSTOM, toString(history.tokens), evaluateTokens(history.tokens));
+    }
+
+    memoryClick(){
+        updateState.call(this, TokenManagerState.EVALUATED);
+    }
+
     clear(last){
         updateState.call(this, TokenManagerState.NORMAL);
         if(!last){
             this.tokens.splice(0);
         }
         else{
-            let lastOperatorIndex = getLastOperatorIndex.call(this);
+            let lastOperatorIndex = getLastOperatorIndex(this.tokens);
             this.tokens.splice(lastOperatorIndex+1, this.tokens.length);
         }
 
@@ -89,29 +102,7 @@ export default class {
     }
 
     backspace(){
-        let lastOperatorIndex = getLastOperatorIndex.call(this);
-        if(lastOperatorIndex === this.tokens.length - 1){ return; }
 
-        this.tokens.splice(-1);
-
-        if(lastOperatorIndex === this.tokens.length - 1  || !this.tokens.length){
-            this.tokens.push('0');
-        }
-
-        this.trigger(TokenManagerEvent.CHANGE);
-    }
-
-    applyHistory(history){
-        updateState.call(this, TokenManagerState.NORMAL);
-
-        this.tokens.splice(0);
-        this.tokens.push.apply(this.tokens, history.tokens);
-
-        this.trigger(TokenManagerEvent.APPLIED_HISTORY, toString(history.tokens), evaluateTokens(history.tokens));
-    }
-
-    memoryClick(){
-        updateState.call(this, TokenManagerState.EVALUATED);
     }
 }
 
@@ -119,27 +110,17 @@ function createAccessors(){
     Object.defineProperties(this, {
         'expressionStr' : {
             get: () => {
-                var lastOperatorIndex = getLastOperatorIndex.call(this);
+                var lastOperatorIndex = getLastOperatorIndex(this.tokens);
                 return toString(this.tokens.slice(0, lastOperatorIndex + 1));
             }
         },
         'answerStr' : {
             get: () => {
-                var lastOperatorIndex = getLastOperatorIndex.call(this);
+                var lastOperatorIndex = getLastOperatorIndex(this.tokens);
                 return toString(this.tokens.slice(lastOperatorIndex + 1));
             }
         }
     });
-}
-
-function getLastOperatorIndex(){
-    var operatorIndex = -1;
-    operatorIndex =  Math.max(this.tokens.lastIndexOf('+'), operatorIndex);
-    operatorIndex =  Math.max(this.tokens.lastIndexOf('-'), operatorIndex);
-    operatorIndex =  Math.max(this.tokens.lastIndexOf('&times;'), operatorIndex);
-    operatorIndex =  Math.max(this.tokens.lastIndexOf('&divide;'), operatorIndex);
-
-    return operatorIndex;
 }
 
 function updateState(state){

@@ -3,7 +3,7 @@ let TokenManagerEvents = {};
 Object.defineProperties(TokenManagerEvents, {
     CHANGE: { value: 'change' },
     EVALUATION: { value: 'evaluation' },
-    APPLIED_HISTORY: { value: 'applied_history' }
+    CUSTOM: { value: 'custom' }
 });
 
 export default TokenManagerEvents;

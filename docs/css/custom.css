@@ -1,5 +1,12 @@
-.demo-area { position: absolute; right: 0; top: 0; width: 400px; }
-.demo-area .calculator { display: inline-block; width:100%; }
+body { margin: 8px; }
 
-.content { width: calc(100% - 400px); }
+.demo-area { position: absolute; right: 0; top: 0; width: 400px; overflow: hidden; }
+.demo-area .calculator { display: inline-block; width: calc(100% - 1px); border-left: 1px solid rgba(150,150,150,0.4);}
+
+.demo-area .calculator .calc-button.sqrt { color: #ddd; pointer-events: none; }
+.demo-area .calculator .calc-button.squared { color: #ddd; pointer-events: none; }
+.demo-area .calculator .calc-button.frac { color: #ddd; pointer-events: none; }
+.demo-area .calculator .calc-button.plus-minus { color: #bbb; pointer-events: none; }
+
+.content { width: calc(100% - 392px); }
 .important { background: #ffc000; margin-left: -8px; padding: 1px 0 1px 8px; }

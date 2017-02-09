@@ -1,2 +1,5 @@
 .demo-area { position: absolute; right: 0; top: 0; width: 400px; }
 .demo-area .calculator { display: inline-block; width:100%; }
+
+.content { width: calc(100% - 400px); }
+.important { background: #ffc000; margin-left: -8px; padding: 1px 0 1px 8px; }

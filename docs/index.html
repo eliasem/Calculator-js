@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" >
+
+    <title>Calculator-js </title>
+
+    <link rel="stylesheet" href="/calculator-js/css/calculator.css">
+
+    <script src="/calculator-js/calculator.js"></script>
+</head>
+<body>
+    <script>
+        $(document).ready(function(){
+            var calculator = new Calculator();
+            $('.demo-area').append(calculator.$el);
+
+            calculator.layout.resizeLayout();
+        })
+    </script>
+    <h1>Calculator Demo</h1>
+    <div class="demo-area"></div>
+</body>
+</html>

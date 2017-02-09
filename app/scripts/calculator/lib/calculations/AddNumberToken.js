@@ -9,7 +9,11 @@ export default (tokenManager, button) => {
     if(tokenManager.answerStr.indexOf('.') !== -1 && button.mathSymbol === '.'){ return; }
     if(tokenManager.answerStr === '0' && button.mathSymbol === '.'){ removeZero = false; }
 
+    if(tokenManager.state === TokenManagerState.EVALUATED && button.mathSymbol === '.'){
+        tokenManager.push('0');
+    }
+
     tokenManager.push(mathSymbol, {
-        replace: (tokenManager.answerStr === '0' && removeZero) || tokenManager.state === TokenManagerState.EVALUATED
+        replace: (tokenManager.answerStr === '0' && removeZero) || (tokenManager.state === TokenManagerState.EVALUATED && button.mathSymbol === '.')
     });
 };

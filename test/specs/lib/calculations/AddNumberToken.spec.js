@@ -62,4 +62,15 @@ describe('Add Number Token', () => {
         expect(tokenManager.push.getCall(0).args[1].replace).to.equal(false);
     });
 
+    it('should add 0 if . is the first button pressed after been evaluated', () => {
+        tokenManager.answerStr = '9';
+        button.mathSymbol = '.';
+        tokenManager.state = TokenManagerState.EVALUATED;
+
+        underTest = new AddNumberToken(tokenManager, button);
+
+        expect(tokenManager.push.getCall(0).args[0]).to.equal('0');
+        expect(tokenManager.push.getCall(1).args[0]).to.equal('.');
+    });
+
 });

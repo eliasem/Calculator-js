@@ -14,6 +14,6 @@ export default (tokenManager, button) => {
     }
 
     tokenManager.push(mathSymbol, {
-        replace: (tokenManager.answerStr === '0' && removeZero) || (tokenManager.state === TokenManagerState.EVALUATED && button.mathSymbol === '.')
+        replace: (tokenManager.answerStr === '0' && removeZero) || tokenManager.state === TokenManagerState.EVALUATED
     });
 };

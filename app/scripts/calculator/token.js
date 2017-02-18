@@ -1,6 +1,10 @@
 import mathjs from 'mathjs';
 import {findSmallestButGreaterThan} from 'calculator/utils';
 
+const typeToSymbol = {
+    'sqrt': '&radic;'
+};
+
 export function toString (tokens, options){
     options = options || { skipEndOperator: false };
     options.skipEndOperator = options.skipEndOperator === true;
@@ -15,6 +19,10 @@ export function toString (tokens, options){
             str = ` ${str} `;
         }
 
+        if(str.type){
+            str = `${typeToSymbol[str.type]}(${toString(str.tokens)})`;
+        }
+
         s += str;
     }
 
@@ -23,10 +31,29 @@ export function toString (tokens, options){
 
 export function evaluateTokens(tokens){
     let nextOperatorIndex = getNextOperatorIndex(tokens, 0);
-    let chain = mathjs.chain(tokens.slice(0, nextOperatorIndex === -1 ? tokens.length : nextOperatorIndex).join(''));
+    let chain;
+
+    if(nextOperatorIndex === -1 ){
+        if(tokens[tokens.length-1].type){
+            chain = mathjs.chain(tokens[tokens.length-1].tokens.join(''))[getMethodName(tokens[tokens.length-1])]();
+        }
+        else{
+            chain = mathjs.chain(tokens.slice(0, tokens.length).join(''));
+        }
+    }
+    else {
+        if(tokens[nextOperatorIndex-1].type){
+            chain = mathjs.chain(tokens[nextOperatorIndex-1].tokens.join(''))[getMethodName(tokens[nextOperatorIndex-1])]();
+        }
+        else {
+            chain = mathjs.chain(tokens.slice(0, nextOperatorIndex).join(''));
+        }
+    }
 
     for(let i = nextOperatorIndex; i < tokens.length && nextOperatorIndex !== -1;){
         let methodName = getMethodName(tokens[i]);
+        let hasType = !!tokens[i].type;
+        let methodTokens = tokens[i].tokens;
         i++;
 
         nextOperatorIndex = getNextOperatorIndex(tokens, i);
@@ -34,7 +61,13 @@ export function evaluateTokens(tokens){
         if(nextOperatorIndex === -1){ nextOperatorIndex = tokens.length; }
         if(i === tokens.length){ continue; }
 
-        chain = chain[methodName](tokens.slice(i, nextOperatorIndex).join(''));
+        if(hasType){
+            chain = chain[methodName](methodTokens.join(''));
+        }
+        else{
+            chain = chain[methodName](evaluateTokens(tokens.slice(i, nextOperatorIndex)));
+        }
+
 
         i = nextOperatorIndex;
     }
@@ -57,6 +90,10 @@ function isOperator(token){
 }
 
 function getMethodName(token){
+    switch(token.type){
+        case 'sqrt': return 'sqrt';
+    }
+
     switch(token){
         case '+': return 'add';
         case '-': return 'subtract';

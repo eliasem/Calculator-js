@@ -111,12 +111,18 @@ function createAccessors(){
         'expressionStr' : {
             get: () => {
                 var lastOperatorIndex = getLastOperatorIndex(this.tokens);
+                if(this.tokens[this.tokens.length-1].type){
+                    return toString(this.tokens.slice(0, this.tokens.length));
+                }
                 return toString(this.tokens.slice(0, lastOperatorIndex + 1));
             }
         },
         'answerStr' : {
             get: () => {
                 var lastOperatorIndex = getLastOperatorIndex(this.tokens);
+                if(this.tokens[this.tokens.length-1].type){
+                    return '';
+                }
                 return toString(this.tokens.slice(lastOperatorIndex + 1));
             }
         }

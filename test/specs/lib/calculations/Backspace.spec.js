@@ -1,5 +1,6 @@
 import sinon from 'sinon';
 import backspace from 'calculator/lib/calculations/Backspace';
+import TokenManagerStates from 'calculator/constant/TokenManagerStates';
 
 describe('Backspace', () => {
     let tokenManager;
@@ -7,7 +8,8 @@ describe('Backspace', () => {
     beforeEach(() => {
         tokenManager = {
             tokens: [],
-            trigger: sinon.stub()
+            trigger: sinon.stub(),
+            state: TokenManagerStates.NORMAL
         };
     });
 
@@ -38,5 +40,14 @@ describe('Backspace', () => {
         backspace(tokenManager);
 
         expect(tokenManager.tokens).to.eql(['9', '+', '0']);
+    });
+
+    it('should not trigger change if state is evaluated', () => {
+        tokenManager.state = TokenManagerStates.EVALUATED;
+        tokenManager.tokens.push('9');
+
+        backspace(tokenManager);
+
+        expect(tokenManager.trigger.called).to.equal(false);
     });
 });

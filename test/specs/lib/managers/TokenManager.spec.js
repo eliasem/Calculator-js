@@ -87,6 +87,21 @@ describe('Token Manager', () => {
                 expect(underTest.expressionStr).to.equal('10 + ');
                 expect(underTest.answerStr).to.equal('40');
             });
+
+            it('should be able to handle sqrt tokens when ending with an operator', () => {
+                underTest.push({type:'sqrt', tokens:['25']}, {replace:true});
+                underTest.push('+');
+                expect(underTest.expressionStr).to.equal('&radic;(25) + ');
+                expect(underTest.answerStr).to.equal('');
+            });
+
+            it('should be able to handle sqrt tokens when ending with a number', () => {
+                underTest.push({type:'sqrt', tokens:['25']}, {replace:true});
+                underTest.push('+');
+                underTest.push('40');
+                expect(underTest.expressionStr).to.equal('&radic;(25) + ');
+                expect(underTest.answerStr).to.equal('40');
+            });
         });
 
     });

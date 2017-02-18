@@ -11,6 +11,10 @@ describe('token util', () => {
             expect(toString(['5','0', '-', '2', '&times;'], {skipEndOperator:true})).to.equal('50 - 2');
             expect(toString(['5','0', '-', '2'], {skipEndOperator:true})).to.equal('50 - 2');
         });
+
+        it('should display token correctly if it has a type', () =>{
+            expect(toString([{type:'sqrt', tokens:['5']}])).to.equal('&radic;(5)');
+        });
     });
 
     describe('evaluateTokens', () => {
@@ -22,6 +26,12 @@ describe('token util', () => {
         it('should handle complete calculations', () => {
             expect(evaluateTokens(['5','0'])).to.equal('50');
             expect(evaluateTokens(['5','0', '&times;', '2'])).to.equal(100);
+        });
+
+        it('should be able to handle calculations with sqrt', () => {
+            expect(evaluateTokens([{type: 'sqrt', tokens:['25']}])).to.equal(5);
+            expect(evaluateTokens([{type: 'sqrt', tokens:['25']}, '+'])).to.equal(5);
+            expect(evaluateTokens([{type: 'sqrt', tokens:['25']}, '+', '5'])).to.equal(10);
         });
 
     });

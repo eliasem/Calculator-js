@@ -47,7 +47,11 @@ export default {
             'percent': { 'calculationName': 'Percent' }
         }
     },
-    'SQRT' : { 'html': '&radic;', 'class': 'sqrt' },
+    'SQRT' : { 'html': '&radic;', 'class': 'sqrt',
+        'calculations': {
+            'sqrt': { 'calculationName': 'Sqrt' }
+        }
+    },
     'SQUARED' : { 'html': '<span class="math">x</span><sup>2</sup>', 'class': 'squared' },
     'FRAC' : { 'html': '<sup>1</sup>/<span class="math">x</span>', 'class': 'frac' },
     'CE' : { 'html': 'CE', 'class': 'ce',

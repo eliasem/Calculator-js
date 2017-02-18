@@ -5,6 +5,7 @@ import ClearTokens from '../lib/calculations/ClearTokens';
 import ClearLastTokens from '../lib/calculations/ClearLastTokens';
 import Backspace from '../lib/calculations/Backspace';
 import Percent from '../lib/calculations/Percent';
+import Sqrt from '../lib/calculations/Sqrt';
 
 export default {
     'AddNumberToken': AddNumberToken,
@@ -13,5 +14,6 @@ export default {
     'ClearTokens': ClearTokens,
     'ClearLastTokens': ClearLastTokens,
     'Backspace': Backspace,
-    'Percent': Percent
+    'Percent': Percent,
+    'Sqrt': Sqrt
 };

@@ -3,7 +3,6 @@ body { margin: 8px; }
 .demo-area { position: absolute; right: 0; top: 0; width: 400px; overflow: hidden; }
 .demo-area .calculator { display: inline-block; width: calc(100% - 1px); border-left: 1px solid rgba(150,150,150,0.4);}
 
-.demo-area .calculator .calc-button.sqrt { color: #ddd; pointer-events: none; }
 .demo-area .calculator .calc-button.squared { color: #ddd; pointer-events: none; }
 .demo-area .calculator .calc-button.frac { color: #ddd; pointer-events: none; }
 .demo-area .calculator .calc-button.plus-minus { color: #bbb; pointer-events: none; }

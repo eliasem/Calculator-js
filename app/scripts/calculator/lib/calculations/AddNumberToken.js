@@ -5,6 +5,11 @@ export default (tokenManager, button) => {
     let mathSymbol = button.mathSymbol;
     let removeZero = true;
 
+    if(tokenManager.state === TokenManagerState.INVALID){
+        tokenManager.clear();
+        return;
+    }
+
     if(tokenManager.answerStr === '0' && button.mathSymbol === '0'){ return; }
     if(tokenManager.answerStr.indexOf('.') !== -1 && button.mathSymbol === '.'){ return; }
     if(tokenManager.answerStr === '0' && button.mathSymbol === '.'){ removeZero = false; }

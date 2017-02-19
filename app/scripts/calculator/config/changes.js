@@ -1,5 +1,7 @@
-import ToggleDisable from '../lib/changes/ToggleDisable';
+import ToggleDisableWhenEmpty from '../lib/changes/ToggleDisableWhenEmpty';
+import ToggleDisableWhenInvalid from '../lib/changes/ToggleDisableWhenInvalid';
 
 export default {
-    'ToggleDisable': ToggleDisable
+    'ToggleDisableWhenEmpty': ToggleDisableWhenEmpty,
+    'ToggleDisableWhenInvalid': ToggleDisableWhenInvalid
 };

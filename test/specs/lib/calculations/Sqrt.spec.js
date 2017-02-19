@@ -1,5 +1,7 @@
 import sinon from 'sinon';
 import TokenManager from 'calculator/lib/managers/TokenManager';
+import TokenManagerEvents from 'calculator/constant/TokenManagerEvents';
+import TokenManagerStates from 'calculator/constant/TokenManagerStates';
 import sqrt from 'calculator/lib/calculations/Sqrt';
 
 describe('Sqrt', () => {
@@ -17,9 +19,10 @@ describe('Sqrt', () => {
 
         sqrt(tokenManager);
 
-        expect(tokenManager.tokens).to.eql(['0']);
-        expect(tokenManager.trigger.getCall(1).args[1]).to.equal('0');
-        expect(tokenManager.trigger.getCall(1).args[2]).to.equal('0');
+        expect(tokenManager.tokens).to.eql([{type:'sqrt', tokens:['-9']}]);
+        expect(tokenManager.trigger.getCall(1).args[0]).to.equal(TokenManagerEvents.CHANGE);
+        expect(tokenManager.trigger.getCall(2).args[0]).to.equal(TokenManagerEvents.EVALUATION);
+        expect(tokenManager.state).to.equal(TokenManagerStates.INVALID);
     });
 
 });

@@ -35,6 +35,11 @@ export default class {
         this[eventApi].trigger.apply(this[eventApi], [eventName].concat(arg) );
     }
 
+    setToInvalid(){
+        updateState.call(this, TokenManagerState.INVALID);
+        this.trigger(TokenManagerEvent.CHANGE);
+    }
+
     push(value, options){
         updateState.call(this, TokenManagerState.NORMAL);
 
@@ -99,10 +104,6 @@ export default class {
         this.tokens.push('0');
 
         this.trigger(TokenManagerEvent.CHANGE);
-    }
-
-    backspace(){
-
     }
 }
 

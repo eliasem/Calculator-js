@@ -3,6 +3,7 @@ import $ from 'jquery';
 import Referencable from './behaviours/Referencable';
 import Resizer from './behaviours/Resizer';
 import buildLayout from './builder/layout';
+import TokenManagerStates from 'calculator/constant/TokenManagerStates';
 
 
 export default class Layout extends Referencable {
@@ -38,14 +39,22 @@ function renderExpression(){
     this.$expressionArea.html(this.tokenManager.expressionStr);
 }
 function renderAnswer(){
-    this.$answer.html(this.tokenManager.answerStr);
+    displayValidAnswer.call(this, this.tokenManager.answerStr);
 }
 
 function renderEvaluationAnswer(answer){
-    this.$answer.html(answer);
+    displayValidAnswer.call(this, answer);
+}
+
+function displayValidAnswer(answer){
+    if(this.tokenManager.state === TokenManagerStates.INVALID ){
+        this.$answer.html('Invalid input');
+    } else {
+        this.$answer.html(answer);
+    }
 }
 
 function renderCustomExpressionAndAnswer(expression, answer){
     this.$expressionArea.html(expression);
-    renderEvaluationAnswer.call(this, answer);
+    displayValidAnswer.call(this, answer);
 }

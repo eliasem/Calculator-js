@@ -14,7 +14,8 @@ describe('Add Number Token', () => {
         tokenManager = {
             push: sinon.stub(),
             answerStr: '0',
-            state: TokenManagerState.NORMAL
+            state: TokenManagerState.NORMAL,
+            clear: sinon.stub()
         };
     });
 
@@ -71,6 +72,15 @@ describe('Add Number Token', () => {
 
         expect(tokenManager.push.getCall(0).args[0]).to.equal('0');
         expect(tokenManager.push.getCall(1).args[0]).to.equal('.');
+    });
+
+    it('should clear when tokenManager is invalid', () => {
+        tokenManager.state = TokenManagerState.INVALID;
+
+        underTest = new AddNumberToken(tokenManager, button);
+
+        expect(tokenManager.push.called).to.equal(false);
+        expect(tokenManager.clear.called).to.equal(true);
     });
 
 });

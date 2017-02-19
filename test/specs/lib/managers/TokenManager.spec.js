@@ -106,7 +106,7 @@ describe('Token Manager', () => {
 
     });
 
-    describe('adding tokens', function(){
+    describe('adding tokens', () => {
 
         beforeEach(() => {
             sinon.stub(underTest, 'trigger');
@@ -280,5 +280,24 @@ describe('Token Manager', () => {
 
             expect(underTest.state).to.equal(TokenManagerState.EVALUATED);
         });
+    });
+
+    describe('setToInvalid', () => {
+
+        beforeEach(() => {
+            sinon.stub(underTest, 'trigger');
+        });
+
+        afterEach(() => {
+            underTest.trigger.restore();
+        });
+
+        it('should set the state and trigger change event', () => {
+            underTest.setToInvalid();
+
+            expect(underTest.state).to.equal(TokenManagerState.INVALID);
+            expect(underTest.trigger.getCall(0).args[0]).to.equal(TokenManagerEvent.CHANGE);
+        });
+
     });
 });

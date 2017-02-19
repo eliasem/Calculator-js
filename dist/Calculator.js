@@ -10537,6 +10537,11 @@ define('calculator/lib/calculations/AddNumberToken',['exports', 'calculator/cons
         var mathSymbol = button.mathSymbol;
         var removeZero = true;
 
+        if (tokenManager.state === _TokenManagerStates2.default.INVALID) {
+            tokenManager.clear();
+            return;
+        }
+
         if (tokenManager.answerStr === '0' && button.mathSymbol === '0') {
             return;
         }
@@ -10601,14 +10606,27 @@ define('calculator/lib/calculations/AddArithmeticToken',['exports', 'calculator/
 });
 //# sourceMappingURL=AddArithmeticToken.js.map
 ;
-define('calculator/lib/calculations/Evaluate',["exports"], function (exports) {
-    "use strict";
+define('calculator/lib/calculations/Evaluate',['exports', 'calculator/constant/TokenManagerStates'], function (exports, _TokenManagerStates) {
+    'use strict';
 
     Object.defineProperty(exports, "__esModule", {
         value: true
     });
 
+    var _TokenManagerStates2 = _interopRequireDefault(_TokenManagerStates);
+
+    function _interopRequireDefault(obj) {
+        return obj && obj.__esModule ? obj : {
+            default: obj
+        };
+    }
+
     exports.default = function (tokenManager, button) {
+        if (tokenManager.state === _TokenManagerStates2.default.INVALID) {
+            tokenManager.clear();
+            return;
+        }
+
         tokenManager.evaluate();
     };
 });
@@ -10997,7 +11015,7 @@ define('calculator/lib/calculations/Percent',['exports', 'calculator/token', 'ca
 });
 //# sourceMappingURL=Percent.js.map
 ;
-define('calculator/lib/calculations/Sqrt',['exports', 'calculator/token', 'calculator/constant/TokenManagerEvents'], function (exports, _token, _TokenManagerEvents) {
+define('calculator/lib/calculations/Sqrt',['exports', 'calculator/token', 'calculator/constant/TokenManagerEvents', 'calculator/constant/TokenManagerStates'], function (exports, _token, _TokenManagerEvents, _TokenManagerStates) {
     'use strict';
 
     Object.defineProperty(exports, "__esModule", {
@@ -11006,6 +11024,8 @@ define('calculator/lib/calculations/Sqrt',['exports', 'calculator/token', 'calcu
 
     var _TokenManagerEvents2 = _interopRequireDefault(_TokenManagerEvents);
 
+    var _TokenManagerStates2 = _interopRequireDefault(_TokenManagerStates);
+
     function _interopRequireDefault(obj) {
         return obj && obj.__esModule ? obj : {
             default: obj
@@ -11013,10 +11033,16 @@ define('calculator/lib/calculations/Sqrt',['exports', 'calculator/token', 'calcu
     }
 
     exports.default = function (tokenManager, button) {
+        var answerStr = tokenManager.answerStr;
+
         tokenManager.push({
             type: 'sqrt',
-            tokens: [tokenManager.answerStr]
+            tokens: [answerStr]
         }, { replace: true });
+
+        if (parseFloat(answerStr) < 0) {
+            tokenManager.setToInvalid();
+        }
 
         tokenManager.trigger(_TokenManagerEvents2.default.EVALUATION);
     };
@@ -12058,7 +12084,7 @@ define('calculator/lib/builder/layout',['exports', 'jquery', './Panel', './Histo
 });
 //# sourceMappingURL=layout.js.map
 ;
-define('calculator/lib/Layout',['exports', 'jquery', './behaviours/Referencable', './behaviours/Resizer', './builder/layout'], function (exports, _jquery, _Referencable2, _Resizer, _layout) {
+define('calculator/lib/Layout',['exports', 'jquery', './behaviours/Referencable', './behaviours/Resizer', './builder/layout', 'calculator/constant/TokenManagerStates'], function (exports, _jquery, _Referencable2, _Resizer, _layout, _TokenManagerStates) {
     'use strict';
 
     Object.defineProperty(exports, "__esModule", {
@@ -12072,6 +12098,8 @@ define('calculator/lib/Layout',['exports', 'jquery', './behaviours/Referencable'
     var _Resizer2 = _interopRequireDefault(_Resizer);
 
     var _layout2 = _interopRequireDefault(_layout);
+
+    var _TokenManagerStates2 = _interopRequireDefault(_TokenManagerStates);
 
     function _interopRequireDefault(obj) {
         return obj && obj.__esModule ? obj : {
@@ -12177,16 +12205,24 @@ define('calculator/lib/Layout',['exports', 'jquery', './behaviours/Referencable'
         this.$expressionArea.html(this.tokenManager.expressionStr);
     }
     function renderAnswer() {
-        this.$answer.html(this.tokenManager.answerStr);
+        displayValidAnswer.call(this, this.tokenManager.answerStr);
     }
 
     function renderEvaluationAnswer(answer) {
-        this.$answer.html(answer);
+        displayValidAnswer.call(this, answer);
+    }
+
+    function displayValidAnswer(answer) {
+        if (this.tokenManager.state === _TokenManagerStates2.default.INVALID) {
+            this.$answer.html('Invalid input');
+        } else {
+            this.$answer.html(answer);
+        }
     }
 
     function renderCustomExpressionAndAnswer(expression, answer) {
         this.$expressionArea.html(expression);
-        renderEvaluationAnswer.call(this, answer);
+        displayValidAnswer.call(this, answer);
     }
 });
 //# sourceMappingURL=Layout.js.map
@@ -12672,6 +12708,12 @@ define('calculator/lib/managers/TokenManager',['exports', 'calculator/token', 'c
                 this[eventApi].trigger.apply(this[eventApi], [eventName].concat(arg));
             }
         }, {
+            key: 'setToInvalid',
+            value: function setToInvalid() {
+                updateState.call(this, _TokenManagerStates2.default.INVALID);
+                this.trigger(_TokenManagerEvents2.default.CHANGE);
+            }
+        }, {
             key: 'push',
             value: function push(value, options) {
                 updateState.call(this, _TokenManagerStates2.default.NORMAL);
@@ -12747,9 +12789,6 @@ define('calculator/lib/managers/TokenManager',['exports', 'calculator/token', 'c
 
                 this.trigger(_TokenManagerEvents2.default.CHANGE);
             }
-        }, {
-            key: 'backspace',
-            value: function backspace() {}
         }]);
 
         return _class;
@@ -13260,7 +13299,7 @@ define('calculator/lib/managers/MemoryManager',['exports', 'jquery', 'calculator
 });
 //# sourceMappingURL=MemoryManager.js.map
 ;
-define('calculator/lib/changes/ToggleDisable',['exports'], function (exports) {
+define('calculator/lib/changes/ToggleDisableWhenEmpty',['exports'], function (exports) {
     'use strict';
 
     Object.defineProperty(exports, "__esModule", {
@@ -13271,16 +13310,39 @@ define('calculator/lib/changes/ToggleDisable',['exports'], function (exports) {
         button.$el.toggleClass('disabled', manager.getMemoryStack().length === 0);
     };
 });
-//# sourceMappingURL=ToggleDisable.js.map
+//# sourceMappingURL=ToggleDisableWhenEmpty.js.map
 ;
-define('calculator/config/changes',['exports', '../lib/changes/ToggleDisable'], function (exports, _ToggleDisable) {
+define('calculator/lib/changes/ToggleDisableWhenInvalid',['exports', 'calculator/constant/TokenManagerStates'], function (exports, _TokenManagerStates) {
     'use strict';
 
     Object.defineProperty(exports, "__esModule", {
         value: true
     });
 
-    var _ToggleDisable2 = _interopRequireDefault(_ToggleDisable);
+    var _TokenManagerStates2 = _interopRequireDefault(_TokenManagerStates);
+
+    function _interopRequireDefault(obj) {
+        return obj && obj.__esModule ? obj : {
+            default: obj
+        };
+    }
+
+    exports.default = function (manager, button) {
+        button.$el.toggleClass('disabled', manager.state === _TokenManagerStates2.default.INVALID);
+    };
+});
+//# sourceMappingURL=ToggleDisableWhenInvalid.js.map
+;
+define('calculator/config/changes',['exports', '../lib/changes/ToggleDisableWhenEmpty', '../lib/changes/ToggleDisableWhenInvalid'], function (exports, _ToggleDisableWhenEmpty, _ToggleDisableWhenInvalid) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+
+    var _ToggleDisableWhenEmpty2 = _interopRequireDefault(_ToggleDisableWhenEmpty);
+
+    var _ToggleDisableWhenInvalid2 = _interopRequireDefault(_ToggleDisableWhenInvalid);
 
     function _interopRequireDefault(obj) {
         return obj && obj.__esModule ? obj : {
@@ -13289,7 +13351,8 @@ define('calculator/config/changes',['exports', '../lib/changes/ToggleDisable'], 
     }
 
     exports.default = {
-        'ToggleDisable': _ToggleDisable2.default
+        'ToggleDisableWhenEmpty': _ToggleDisableWhenEmpty2.default,
+        'ToggleDisableWhenInvalid': _ToggleDisableWhenInvalid2.default
     };
 });
 //# sourceMappingURL=changes.js.map
@@ -13454,6 +13517,9 @@ define('calculator/config/buttons',['exports'], function (exports) {
         'HISTORY': { 'html': '<span class="icon icon-history">', 'class': 'history',
             'actions': {
                 'toggle': { 'actionName': 'ToggleClass', 'actionArgs': ['&history', 'displayNone'] }
+            },
+            'changes': {
+                'toggleDisableWhenInvalid': { 'changeName': 'ToggleDisableWhenInvalid', 'on': '&tokenManager' }
             }
         },
         'MC': { 'html': 'MC', 'class': 'mc disabled',
@@ -13461,7 +13527,8 @@ define('calculator/config/buttons',['exports'], function (exports) {
                 'memoryClear': { 'actionName': 'MemoryClear', 'actionArgs': ['&memoryManager'] }
             },
             'changes': {
-                'toggleDisable': { 'changeName': 'ToggleDisable', 'on': '&memoryManager' }
+                'toggleDisableWhenEmpty': { 'changeName': 'ToggleDisableWhenEmpty', 'on': '&memoryManager' },
+                'toggleDisableWhenInvalid': { 'changeName': 'ToggleDisableWhenInvalid', 'on': '&tokenManager' }
             }
         },
         'MR': { 'html': 'MR', 'class': 'mr disabled',
@@ -13469,59 +13536,98 @@ define('calculator/config/buttons',['exports'], function (exports) {
                 'memoryRestore': { 'actionName': 'MemoryRestore', 'actionArgs': ['&tokenManager', '&memoryManager'] }
             },
             'changes': {
-                'toggleDisable': { 'changeName': 'ToggleDisable', 'on': '&memoryManager' }
+                'toggleDisableWhenEmpty': { 'changeName': 'ToggleDisableWhenEmpty', 'on': '&memoryManager' },
+                'toggleDisableWhenInvalid': { 'changeName': 'ToggleDisableWhenInvalid', 'on': '&tokenManager' }
             }
         },
         'M_PLUS': { 'html': 'M+', 'class': 'm-plus',
             'actions': {
                 'memoryPlus': { 'actionName': 'MemoryPlus', 'actionArgs': ['&tokenManager', '&memoryManager'] }
+            },
+            'changes': {
+                'toggleDisableWhenInvalid': { 'changeName': 'ToggleDisableWhenInvalid', 'on': '&tokenManager' }
             }
         },
         'M_MINUS': { 'html': 'M-', 'class': 'm-minus',
             'actions': {
                 'memoryMinus': { 'actionName': 'MemoryMinus', 'actionArgs': ['&tokenManager', '&memoryManager'] }
+            },
+            'changes': {
+                'toggleDisableWhenInvalid': { 'changeName': 'ToggleDisableWhenInvalid', 'on': '&tokenManager' }
             }
         },
         'MS': { 'html': 'MS', 'class': 'ms',
             'actions': {
                 'memorySave': { 'actionName': 'MemorySave', 'actionArgs': ['&tokenManager', '&memoryManager'] }
+            },
+            'changes': {
+                'toggleDisableWhenInvalid': { 'changeName': 'ToggleDisableWhenInvalid', 'on': '&tokenManager' }
             }
         },
         'M_STACK': { 'html': 'M <div class="triangle down">', 'class': 'm-stack',
             'actions': {
                 'toggle': { 'actionName': 'ToggleClass', 'actionArgs': ['&memoryStack', 'displayNone'] }
+            },
+            'changes': {
+                'toggleDisableWhenInvalid': { 'changeName': 'ToggleDisableWhenInvalid', 'on': '&tokenManager' }
             }
         },
         'PERCENT': { 'html': '%', 'class': 'percent',
             'calculations': {
                 'percent': { 'calculationName': 'Percent' }
+            },
+            'changes': {
+                'toggleDisableWhenInvalid': { 'changeName': 'ToggleDisableWhenInvalid', 'on': '&tokenManager' }
             }
         },
         'SQRT': { 'html': '&radic;', 'class': 'sqrt',
             'calculations': {
                 'sqrt': { 'calculationName': 'Sqrt' }
+            },
+            'changes': {
+                'toggleDisableWhenInvalid': { 'changeName': 'ToggleDisableWhenInvalid', 'on': '&tokenManager' }
             }
         },
-        'SQUARED': { 'html': '<span class="math">x</span><sup>2</sup>', 'class': 'squared' },
-        'FRAC': { 'html': '<sup>1</sup>/<span class="math">x</span>', 'class': 'frac' },
+        'SQUARED': { 'html': '<span class="math">x</span><sup>2</sup>', 'class': 'squared',
+            'changes': {
+                'toggleDisableWhenInvalid': { 'changeName': 'ToggleDisableWhenInvalid', 'on': '&tokenManager' }
+            }
+        },
+        'FRAC': { 'html': '<sup>1</sup>/<span class="math">x</span>', 'class': 'frac',
+            'changes': {
+                'toggleDisableWhenInvalid': { 'changeName': 'ToggleDisableWhenInvalid', 'on': '&tokenManager' }
+            }
+        },
         'CE': { 'html': 'CE', 'class': 'ce',
             'calculations': {
                 'clear': { 'calculationName': 'ClearLastTokens' }
+            },
+            'changes': {
+                'toggleDisableWhenInvalid': { 'changeName': 'ToggleDisableWhenInvalid', 'on': '&tokenManager' }
             }
         },
         'C': { 'html': 'C', 'class': 'c',
             'calculations': {
                 'clear': { 'calculationName': 'ClearTokens' }
+            },
+            'changes': {
+                'toggleDisableWhenInvalid': { 'changeName': 'ToggleDisableWhenInvalid', 'on': '&tokenManager' }
             }
         },
         'BACKSPACE': { 'html': '<span class="icon icon-backspace">', 'class': 'backspace',
             'calculations': {
                 'backspace': { 'calculationName': 'Backspace' }
+            },
+            'changes': {
+                'toggleDisableWhenInvalid': { 'changeName': 'ToggleDisableWhenInvalid', 'on': '&tokenManager' }
             }
         },
         'DIVIDE': { 'html': '&divide;', 'class': 'divide', 'mathSymbol': '&divide;',
             'calculations': {
                 'add': { 'calculationName': 'AddArithmeticToken' }
+            },
+            'changes': {
+                'toggleDisableWhenInvalid': { 'changeName': 'ToggleDisableWhenInvalid', 'on': '&tokenManager' }
             }
         },
         'SEVEN': { 'html': '7', 'class': 'number-7', 'mathSymbol': '7',
@@ -13542,6 +13648,9 @@ define('calculator/config/buttons',['exports'], function (exports) {
         'TIMES': { 'html': '&times;', 'class': 'times', 'mathSymbol': '&times;',
             'calculations': {
                 'add': { 'calculationName': 'AddArithmeticToken' }
+            },
+            'changes': {
+                'toggleDisableWhenInvalid': { 'changeName': 'ToggleDisableWhenInvalid', 'on': '&tokenManager' }
             }
         },
         'FOUR': { 'html': '4', 'class': 'number-4', 'mathSymbol': '4',
@@ -13562,6 +13671,9 @@ define('calculator/config/buttons',['exports'], function (exports) {
         'MINUS': { 'html': '-', 'class': 'minus', 'mathSymbol': '-',
             'calculations': {
                 'add': { 'calculationName': 'AddArithmeticToken' }
+            },
+            'changes': {
+                'toggleDisableWhenInvalid': { 'changeName': 'ToggleDisableWhenInvalid', 'on': '&tokenManager' }
             }
         },
         'ONE': { 'html': '1', 'class': 'number-1', 'mathSymbol': '1',
@@ -13582,9 +13694,16 @@ define('calculator/config/buttons',['exports'], function (exports) {
         'PLUS': { 'html': '+', 'class': 'plus', 'mathSymbol': '+',
             'calculations': {
                 'add': { 'calculationName': 'AddArithmeticToken' }
+            },
+            'changes': {
+                'toggleDisableWhenInvalid': { 'changeName': 'ToggleDisableWhenInvalid', 'on': '&tokenManager' }
             }
         },
-        'PLUS_MINUS': { 'html': '&plusmn;', 'class': 'plus-minus' },
+        'PLUS_MINUS': { 'html': '&plusmn;', 'class': 'plus-minus',
+            'changes': {
+                'toggleDisableWhenInvalid': { 'changeName': 'ToggleDisableWhenInvalid', 'on': '&tokenManager' }
+            }
+        },
         'ZERO': { 'html': '0', 'class': 'number-0', 'mathSymbol': '0',
             'calculations': {
                 'add': { 'calculationName': 'AddNumberToken' }
@@ -13593,6 +13712,9 @@ define('calculator/config/buttons',['exports'], function (exports) {
         'DECIMAL': { 'html': '.', 'class': 'decimal', 'mathSymbol': '.',
             'calculations': {
                 'add': { 'calculationName': 'AddNumberToken' }
+            },
+            'changes': {
+                'toggleDisableWhenInvalid': { 'changeName': 'ToggleDisableWhenInvalid', 'on': '&tokenManager' }
             }
         },
         'EQUAL': { 'html': '=', 'class': 'equal',

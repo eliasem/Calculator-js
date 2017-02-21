@@ -10845,7 +10845,8 @@ define('calculator/token',['exports', 'mathjs', 'calculator/utils'], function (e
             }
 
             if (str.type) {
-                str = typeToSymbol[str.type] + '(' + toString(str.tokens) + ')';
+                var symbol = typeToSymbol[str.type] || str.type;
+                str = symbol + '(' + toString(str.tokens) + ')';
             }
 
             s += str;
@@ -10860,13 +10861,13 @@ define('calculator/token',['exports', 'mathjs', 'calculator/utils'], function (e
 
         if (nextOperatorIndex === -1) {
             if (tokens[tokens.length - 1].type) {
-                chain = _mathjs2.default.chain(tokens[tokens.length - 1].tokens.join(''))[getMethodName(tokens[tokens.length - 1])]();
+                chain = _mathjs2.default.chain(evaluateTokens(tokens[tokens.length - 1].tokens))[getMethodName(tokens[tokens.length - 1])]();
             } else {
                 chain = _mathjs2.default.chain(tokens.slice(0, tokens.length).join(''));
             }
         } else {
             if (tokens[nextOperatorIndex - 1].type) {
-                chain = _mathjs2.default.chain(tokens[nextOperatorIndex - 1].tokens.join(''))[getMethodName(tokens[nextOperatorIndex - 1])]();
+                chain = _mathjs2.default.chain(evaluateTokens(tokens[nextOperatorIndex - 1].tokens))[getMethodName(tokens[nextOperatorIndex - 1])]();
             } else {
                 chain = _mathjs2.default.chain(tokens.slice(0, nextOperatorIndex).join(''));
             }
@@ -10917,6 +10918,8 @@ define('calculator/token',['exports', 'mathjs', 'calculator/utils'], function (e
         switch (token.type) {
             case 'sqrt':
                 return 'sqrt';
+            case 'square':
+                return 'square';
         }
 
         switch (token) {
@@ -11049,7 +11052,35 @@ define('calculator/lib/calculations/Sqrt',['exports', 'calculator/token', 'calcu
 });
 //# sourceMappingURL=Sqrt.js.map
 ;
-define('calculator/config/calculations',['exports', '../lib/calculations/AddNumberToken', '../lib/calculations/AddArithmeticToken', '../lib/calculations/Evaluate', '../lib/calculations/ClearTokens', '../lib/calculations/ClearLastTokens', '../lib/calculations/Backspace', '../lib/calculations/Percent', '../lib/calculations/Sqrt'], function (exports, _AddNumberToken, _AddArithmeticToken, _Evaluate, _ClearTokens, _ClearLastTokens, _Backspace, _Percent, _Sqrt) {
+define('calculator/lib/calculations/Square',['exports', 'calculator/token', 'calculator/constant/TokenManagerEvents', 'calculator/constant/TokenManagerStates'], function (exports, _token, _TokenManagerEvents, _TokenManagerStates) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+
+    var _TokenManagerEvents2 = _interopRequireDefault(_TokenManagerEvents);
+
+    var _TokenManagerStates2 = _interopRequireDefault(_TokenManagerStates);
+
+    function _interopRequireDefault(obj) {
+        return obj && obj.__esModule ? obj : {
+            default: obj
+        };
+    }
+
+    exports.default = function (tokenManager, button) {
+        tokenManager.push({
+            type: 'square',
+            tokens: tokenManager.tokens.slice()
+        }, { replace: true });
+
+        tokenManager.trigger(_TokenManagerEvents2.default.EVALUATION);
+    };
+});
+//# sourceMappingURL=Square.js.map
+;
+define('calculator/config/calculations',['exports', '../lib/calculations/AddNumberToken', '../lib/calculations/AddArithmeticToken', '../lib/calculations/Evaluate', '../lib/calculations/ClearTokens', '../lib/calculations/ClearLastTokens', '../lib/calculations/Backspace', '../lib/calculations/Percent', '../lib/calculations/Sqrt', '../lib/calculations/Square'], function (exports, _AddNumberToken, _AddArithmeticToken, _Evaluate, _ClearTokens, _ClearLastTokens, _Backspace, _Percent, _Sqrt, _Square) {
     'use strict';
 
     Object.defineProperty(exports, "__esModule", {
@@ -11072,6 +11103,8 @@ define('calculator/config/calculations',['exports', '../lib/calculations/AddNumb
 
     var _Sqrt2 = _interopRequireDefault(_Sqrt);
 
+    var _Square2 = _interopRequireDefault(_Square);
+
     function _interopRequireDefault(obj) {
         return obj && obj.__esModule ? obj : {
             default: obj
@@ -11086,7 +11119,8 @@ define('calculator/config/calculations',['exports', '../lib/calculations/AddNumb
         'ClearLastTokens': _ClearLastTokens2.default,
         'Backspace': _Backspace2.default,
         'Percent': _Percent2.default,
-        'Sqrt': _Sqrt2.default
+        'Sqrt': _Sqrt2.default,
+        'Square': _Square2.default
     };
 });
 //# sourceMappingURL=calculations.js.map
@@ -13589,6 +13623,9 @@ define('calculator/config/buttons',['exports'], function (exports) {
             }
         },
         'SQUARED': { 'html': '<span class="math">x</span><sup>2</sup>', 'class': 'squared',
+            'calculations': {
+                'square': { 'calculationName': 'Square' }
+            },
             'changes': {
                 'toggleDisableWhenInvalid': { 'changeName': 'ToggleDisableWhenInvalid', 'on': '&tokenManager' }
             }

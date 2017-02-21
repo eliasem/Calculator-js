@@ -20,7 +20,8 @@ export function toString (tokens, options){
         }
 
         if(str.type){
-            str = `${typeToSymbol[str.type]}(${toString(str.tokens)})`;
+            let symbol = typeToSymbol[str.type] || str.type;
+            str = `${symbol}(${toString(str.tokens)})`;
         }
 
         s += str;
@@ -35,7 +36,7 @@ export function evaluateTokens(tokens){
 
     if(nextOperatorIndex === -1 ){
         if(tokens[tokens.length-1].type){
-            chain = mathjs.chain(tokens[tokens.length-1].tokens.join(''))[getMethodName(tokens[tokens.length-1])]();
+            chain = mathjs.chain(evaluateTokens(tokens[tokens.length-1].tokens))[getMethodName(tokens[tokens.length-1])]();
         }
         else{
             chain = mathjs.chain(tokens.slice(0, tokens.length).join(''));
@@ -43,7 +44,7 @@ export function evaluateTokens(tokens){
     }
     else {
         if(tokens[nextOperatorIndex-1].type){
-            chain = mathjs.chain(tokens[nextOperatorIndex-1].tokens.join(''))[getMethodName(tokens[nextOperatorIndex-1])]();
+            chain = mathjs.chain(evaluateTokens(tokens[nextOperatorIndex-1].tokens))[getMethodName(tokens[nextOperatorIndex-1])]();
         }
         else {
             chain = mathjs.chain(tokens.slice(0, nextOperatorIndex).join(''));
@@ -92,6 +93,7 @@ function isOperator(token){
 function getMethodName(token){
     switch(token.type){
         case 'sqrt': return 'sqrt';
+        case 'square': return 'square';
     }
 
     switch(token){

@@ -9,6 +9,7 @@ import 'specs/lib/calculations/Backspace.spec';
 import 'specs/lib/calculations/Evaluate.spec';
 import 'specs/lib/calculations/Percent.spec';
 import 'specs/lib/calculations/Sqrt.spec';
+import 'specs/lib/calculations/Square.spec';
 import 'specs/lib/event/EventApi.spec';
 import 'specs/lib/managers/ActionManager.spec';
 import 'specs/lib/managers/CalculationManager.spec';

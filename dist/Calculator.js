@@ -13624,7 +13624,7 @@ define('calculator/config/buttons',['exports'], function (exports) {
         },
         'SQUARED': { 'html': '<span class="math">x</span><sup>2</sup>', 'class': 'squared',
             'calculations': {
-                'sqrt': { 'calculationName': 'Square' }
+                'square': { 'calculationName': 'Square' }
             },
             'changes': {
                 'toggleDisableWhenInvalid': { 'changeName': 'ToggleDisableWhenInvalid', 'on': '&tokenManager' }

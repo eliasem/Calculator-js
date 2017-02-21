@@ -2,7 +2,8 @@ import mathjs from 'mathjs';
 import {findSmallestButGreaterThan} from 'calculator/utils';
 
 const typeToSymbol = {
-    'sqrt': '&radic;'
+    'sqrt': '&radic;',
+    'square': 'sqr'
 };
 
 export function toString (tokens, options){

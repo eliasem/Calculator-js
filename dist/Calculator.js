@@ -10826,7 +10826,8 @@ define('calculator/token',['exports', 'mathjs', 'calculator/utils'], function (e
     }
 
     var typeToSymbol = {
-        'sqrt': '&radic;'
+        'sqrt': '&radic;',
+        'square': 'sqr'
     };
 
     function toString(tokens, options) {

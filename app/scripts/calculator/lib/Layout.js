@@ -4,6 +4,7 @@ import Referencable from './behaviours/Referencable';
 import Resizer from './behaviours/Resizer';
 import buildLayout from './builder/layout';
 import TokenManagerStates from 'calculator/constant/TokenManagerStates';
+import errorMessages from 'calculator/config/errors';
 
 
 export default class Layout extends Referencable {
@@ -38,17 +39,17 @@ function createLayout(config){
 function renderExpression(){
     this.$expressionArea.html(this.tokenManager.expressionStr);
 }
-function renderAnswer(){
-    displayValidAnswer.call(this, this.tokenManager.answerStr);
+function renderAnswer(errorCode){
+    displayValidAnswer.call(this, errorCode, this.tokenManager.answerStr);
 }
 
-function renderEvaluationAnswer(answer){
-    displayValidAnswer.call(this, answer);
+function renderEvaluationAnswer(errorCode, answer){
+    displayValidAnswer.call(this, errorCode, answer);
 }
 
-function displayValidAnswer(answer){
+function displayValidAnswer(errorCode, answer){
     if(this.tokenManager.state === TokenManagerStates.INVALID ){
-        this.$answer.html('Invalid input');
+        this.$answer.html(errorMessages[errorCode]);
     } else {
         this.$answer.html(answer);
     }

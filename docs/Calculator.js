@@ -10827,7 +10827,8 @@ define('calculator/token',['exports', 'mathjs', 'calculator/utils'], function (e
 
     var typeToSymbol = {
         'sqrt': '&radic;',
-        'square': 'sqr'
+        'square': 'sqr',
+        'inverse': '1/'
     };
 
     function toString(tokens, options) {
@@ -10921,6 +10922,8 @@ define('calculator/token',['exports', 'mathjs', 'calculator/utils'], function (e
                 return 'sqrt';
             case 'square':
                 return 'square';
+            case 'inverse':
+                return 'inv';
         }
 
         switch (token) {
@@ -11045,7 +11048,7 @@ define('calculator/lib/calculations/Sqrt',['exports', 'calculator/token', 'calcu
         }, { replace: true });
 
         if (parseFloat(answerStr) < 0) {
-            tokenManager.setToInvalid();
+            tokenManager.setToInvalid(1);
         }
 
         tokenManager.trigger(_TokenManagerEvents2.default.EVALUATION);
@@ -11081,7 +11084,41 @@ define('calculator/lib/calculations/Square',['exports', 'calculator/token', 'cal
 });
 //# sourceMappingURL=Square.js.map
 ;
-define('calculator/config/calculations',['exports', '../lib/calculations/AddNumberToken', '../lib/calculations/AddArithmeticToken', '../lib/calculations/Evaluate', '../lib/calculations/ClearTokens', '../lib/calculations/ClearLastTokens', '../lib/calculations/Backspace', '../lib/calculations/Percent', '../lib/calculations/Sqrt', '../lib/calculations/Square'], function (exports, _AddNumberToken, _AddArithmeticToken, _Evaluate, _ClearTokens, _ClearLastTokens, _Backspace, _Percent, _Sqrt, _Square) {
+define('calculator/lib/calculations/Inverse',['exports', 'calculator/token', 'calculator/constant/TokenManagerEvents', 'calculator/constant/TokenManagerStates'], function (exports, _token, _TokenManagerEvents, _TokenManagerStates) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+
+    var _TokenManagerEvents2 = _interopRequireDefault(_TokenManagerEvents);
+
+    var _TokenManagerStates2 = _interopRequireDefault(_TokenManagerStates);
+
+    function _interopRequireDefault(obj) {
+        return obj && obj.__esModule ? obj : {
+            default: obj
+        };
+    }
+
+    exports.default = function (tokenManager, button) {
+        var answerStr = tokenManager.answerStr;
+
+        tokenManager.push({
+            type: 'inverse',
+            tokens: tokenManager.tokens.slice()
+        }, { replace: true });
+
+        if (parseFloat(answerStr) === 0) {
+            tokenManager.setToInvalid(2);
+        }
+
+        tokenManager.trigger(_TokenManagerEvents2.default.EVALUATION);
+    };
+});
+//# sourceMappingURL=Inverse.js.map
+;
+define('calculator/config/calculations',['exports', '../lib/calculations/AddNumberToken', '../lib/calculations/AddArithmeticToken', '../lib/calculations/Evaluate', '../lib/calculations/ClearTokens', '../lib/calculations/ClearLastTokens', '../lib/calculations/Backspace', '../lib/calculations/Percent', '../lib/calculations/Sqrt', '../lib/calculations/Square', '../lib/calculations/Inverse'], function (exports, _AddNumberToken, _AddArithmeticToken, _Evaluate, _ClearTokens, _ClearLastTokens, _Backspace, _Percent, _Sqrt, _Square, _Inverse) {
     'use strict';
 
     Object.defineProperty(exports, "__esModule", {
@@ -11106,6 +11143,8 @@ define('calculator/config/calculations',['exports', '../lib/calculations/AddNumb
 
     var _Square2 = _interopRequireDefault(_Square);
 
+    var _Inverse2 = _interopRequireDefault(_Inverse);
+
     function _interopRequireDefault(obj) {
         return obj && obj.__esModule ? obj : {
             default: obj
@@ -11121,7 +11160,8 @@ define('calculator/config/calculations',['exports', '../lib/calculations/AddNumb
         'Backspace': _Backspace2.default,
         'Percent': _Percent2.default,
         'Sqrt': _Sqrt2.default,
-        'Square': _Square2.default
+        'Square': _Square2.default,
+        'Inverse': _Inverse2.default
     };
 });
 //# sourceMappingURL=calculations.js.map
@@ -12119,7 +12159,20 @@ define('calculator/lib/builder/layout',['exports', 'jquery', './Panel', './Histo
 });
 //# sourceMappingURL=layout.js.map
 ;
-define('calculator/lib/Layout',['exports', 'jquery', './behaviours/Referencable', './behaviours/Resizer', './builder/layout', 'calculator/constant/TokenManagerStates'], function (exports, _jquery, _Referencable2, _Resizer, _layout, _TokenManagerStates) {
+define('calculator/config/errors',['exports'], function (exports) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.default = {
+        1: 'Invalid input',
+        2: 'Cannot divide by zero'
+    };
+});
+//# sourceMappingURL=errors.js.map
+;
+define('calculator/lib/Layout',['exports', 'jquery', './behaviours/Referencable', './behaviours/Resizer', './builder/layout', 'calculator/constant/TokenManagerStates', 'calculator/config/errors'], function (exports, _jquery, _Referencable2, _Resizer, _layout, _TokenManagerStates, _errors) {
     'use strict';
 
     Object.defineProperty(exports, "__esModule", {
@@ -12135,6 +12188,8 @@ define('calculator/lib/Layout',['exports', 'jquery', './behaviours/Referencable'
     var _layout2 = _interopRequireDefault(_layout);
 
     var _TokenManagerStates2 = _interopRequireDefault(_TokenManagerStates);
+
+    var _errors2 = _interopRequireDefault(_errors);
 
     function _interopRequireDefault(obj) {
         return obj && obj.__esModule ? obj : {
@@ -12239,17 +12294,17 @@ define('calculator/lib/Layout',['exports', 'jquery', './behaviours/Referencable'
     function renderExpression() {
         this.$expressionArea.html(this.tokenManager.expressionStr);
     }
-    function renderAnswer() {
-        displayValidAnswer.call(this, this.tokenManager.answerStr);
+    function renderAnswer(errorCode) {
+        displayValidAnswer.call(this, errorCode, this.tokenManager.answerStr);
     }
 
-    function renderEvaluationAnswer(answer) {
-        displayValidAnswer.call(this, answer);
+    function renderEvaluationAnswer(errorCode, answer) {
+        displayValidAnswer.call(this, errorCode, answer);
     }
 
-    function displayValidAnswer(answer) {
+    function displayValidAnswer(errorCode, answer) {
         if (this.tokenManager.state === _TokenManagerStates2.default.INVALID) {
-            this.$answer.html('Invalid input');
+            this.$answer.html(_errors2.default[errorCode]);
         } else {
             this.$answer.html(answer);
         }
@@ -12702,6 +12757,7 @@ define('calculator/lib/managers/TokenManager',['exports', 'calculator/token', 'c
 
     var eventApi = Symbol('eventApi');
     var stateTracker = Symbol('stateTracker');
+    var errorCode = Symbol('errorCode');
 
     var _class = function () {
         function _class() {
@@ -12712,6 +12768,7 @@ define('calculator/lib/managers/TokenManager',['exports', 'calculator/token', 'c
 
             this.tokens = ['0'];
             this.state = _TokenManagerStates2.default.NORMAL;
+            this[errorCode] = 0;
 
             createAccessors.call(this);
         }
@@ -12740,12 +12797,13 @@ define('calculator/lib/managers/TokenManager',['exports', 'calculator/token', 'c
 
                 arg = eventName === _TokenManagerEvents2.default.EVALUATION ? [(0, _token.evaluateTokens)(this.tokens)] : arg;
 
-                this[eventApi].trigger.apply(this[eventApi], [eventName].concat(arg));
+                this[eventApi].trigger.apply(this[eventApi], [eventName, this[errorCode]].concat(arg));
             }
         }, {
             key: 'setToInvalid',
-            value: function setToInvalid() {
+            value: function setToInvalid(error) {
                 updateState.call(this, _TokenManagerStates2.default.INVALID);
+                this[errorCode] = error;
                 this.trigger(_TokenManagerEvents2.default.CHANGE);
             }
         }, {
@@ -12813,6 +12871,8 @@ define('calculator/lib/managers/TokenManager',['exports', 'calculator/token', 'c
             key: 'clear',
             value: function clear(last) {
                 updateState.call(this, _TokenManagerStates2.default.NORMAL);
+                this[errorCode] = 0;
+
                 if (!last) {
                     this.tokens.splice(0);
                 } else {
@@ -13005,7 +13065,7 @@ define('calculator/lib/managers/HistoryManager',['exports', 'calculator/constant
     exports.default = _class;
 
 
-    function onChange(tokens) {
+    function onChange(errorState, tokens) {
         if (this.tokenManager.state !== _TokenManagerStates2.default.EVALUATED) {
             return;
         }
@@ -13632,6 +13692,9 @@ define('calculator/config/buttons',['exports'], function (exports) {
             }
         },
         'FRAC': { 'html': '<sup>1</sup>/<span class="math">x</span>', 'class': 'frac',
+            'calculations': {
+                'inverse': { 'calculationName': 'Inverse' }
+            },
             'changes': {
                 'toggleDisableWhenInvalid': { 'changeName': 'ToggleDisableWhenInvalid', 'on': '&tokenManager' }
             }

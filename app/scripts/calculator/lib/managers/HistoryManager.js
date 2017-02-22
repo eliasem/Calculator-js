@@ -29,7 +29,7 @@ export default class extends EventApi {
     }
 }
 
-function onChange(tokens){
+function onChange(errorState, tokens){
     if(this.tokenManager.state !== TokenManagerState.EVALUATED){ return; }
     if(this.tokenManager.hasAlreadyEvaluated()) { return; }
 

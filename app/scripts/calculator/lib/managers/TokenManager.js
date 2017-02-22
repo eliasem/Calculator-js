@@ -5,6 +5,7 @@ import EventApi from 'calculator/lib/event/EventApi';
 
 let eventApi = Symbol('eventApi');
 let stateTracker = Symbol('stateTracker');
+let errorCode = Symbol('errorCode');
 
 export default class {
     constructor(){
@@ -13,6 +14,7 @@ export default class {
 
         this.tokens = ['0'];
         this.state = TokenManagerState.NORMAL;
+        this[errorCode] = 0;
 
         createAccessors.call(this);
     }
@@ -32,11 +34,12 @@ export default class {
     trigger(eventName, ...arg){
         arg = eventName === TokenManagerEvent.EVALUATION ? [evaluateTokens(this.tokens)] : arg;
 
-        this[eventApi].trigger.apply(this[eventApi], [eventName].concat(arg) );
+        this[eventApi].trigger.apply(this[eventApi], [eventName, this[errorCode]].concat(arg) );
     }
 
-    setToInvalid(){
+    setToInvalid(error){
         updateState.call(this, TokenManagerState.INVALID);
+        this[errorCode] = error;
         this.trigger(TokenManagerEvent.CHANGE);
     }
 
@@ -93,6 +96,8 @@ export default class {
 
     clear(last){
         updateState.call(this, TokenManagerState.NORMAL);
+        this[errorCode] = 0;
+
         if(!last){
             this.tokens.splice(0);
         }

@@ -84,6 +84,9 @@ export default {
         }
     },
     'FRAC' : { 'html': '<sup>1</sup>/<span class="math">x</span>', 'class': 'frac',
+        'calculations': {
+            'inverse': { 'calculationName': 'Inverse' }
+        },
         'changes':{
             'toggleDisableWhenInvalid': { 'changeName': 'ToggleDisableWhenInvalid', 'on': '&tokenManager'}
         }

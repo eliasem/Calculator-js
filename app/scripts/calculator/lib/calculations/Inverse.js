@@ -6,12 +6,12 @@ export default (tokenManager, button) => {
     let answerStr = tokenManager.answerStr;
 
     tokenManager.push({
-        type: 'sqrt',
-        tokens: [answerStr]
+        type: 'inverse',
+        tokens: tokenManager.tokens.slice()
     }, {replace: true});
 
-    if(parseFloat(answerStr) < 0){
-        tokenManager.setToInvalid(1);
+    if(parseFloat(answerStr) === 0){
+        tokenManager.setToInvalid(2);
     }
 
     tokenManager.trigger(TokenManagerEvents.EVALUATION);

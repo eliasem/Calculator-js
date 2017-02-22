@@ -7,6 +7,7 @@ import 'specs/lib/calculations/AddArithmeticToken.spec';
 import 'specs/lib/calculations/AddNumberToken.spec';
 import 'specs/lib/calculations/Backspace.spec';
 import 'specs/lib/calculations/Evaluate.spec';
+import 'specs/lib/calculations/Inverse.spec';
 import 'specs/lib/calculations/Percent.spec';
 import 'specs/lib/calculations/Sqrt.spec';
 import 'specs/lib/calculations/Square.spec';

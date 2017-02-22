@@ -3,7 +3,8 @@ import {findSmallestButGreaterThan} from 'calculator/utils';
 
 const typeToSymbol = {
     'sqrt': '&radic;',
-    'square': 'sqr'
+    'square': 'sqr',
+    'inverse': '1/'
 };
 
 export function toString (tokens, options){
@@ -95,6 +96,7 @@ function getMethodName(token){
     switch(token.type){
         case 'sqrt': return 'sqrt';
         case 'square': return 'square';
+        case 'inverse': return 'inv';
     }
 
     switch(token){

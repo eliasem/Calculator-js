@@ -49,7 +49,8 @@ describe('Token Manager', () => {
 
             underTest.trigger(TokenManagerEvent.EVALUATION);
 
-            expect(evaluationCallback.getCall(0).args[0]).to.equal(9);
+            expect(evaluationCallback.getCall(0).args[0]).to.equal(0);
+            expect(evaluationCallback.getCall(0).args[1]).to.equal(9);
         });
 
         it('should receive correct argument when change is triggered', () => {
@@ -61,7 +62,8 @@ describe('Token Manager', () => {
 
             underTest.trigger(TokenManagerEvent.CHANGE, 'arg');
 
-            expect(changeCallback.getCall(0).args[0]).to.equal('arg');
+            expect(changeCallback.getCall(0).args[0]).to.equal(0);
+            expect(changeCallback.getCall(0).args[1]).to.equal('arg');
         });
     });
 
@@ -285,18 +287,21 @@ describe('Token Manager', () => {
     describe('setToInvalid', () => {
 
         beforeEach(() => {
-            sinon.stub(underTest, 'trigger');
+           // sinon.stub(underTest, 'trigger');
         });
 
         afterEach(() => {
-            underTest.trigger.restore();
+           // underTest.trigger.restore();
         });
 
         it('should set the state and trigger change event', () => {
-            underTest.setToInvalid();
+            let changeCallback = sinon.stub();
+
+            underTest.change(changeCallback);
+            underTest.setToInvalid(2);
 
             expect(underTest.state).to.equal(TokenManagerState.INVALID);
-            expect(underTest.trigger.getCall(0).args[0]).to.equal(TokenManagerEvent.CHANGE);
+            expect(changeCallback.getCall(0).args[0]).to.equal(2);
         });
 
     });

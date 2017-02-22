@@ -7,6 +7,7 @@ import Backspace from '../lib/calculations/Backspace';
 import Percent from '../lib/calculations/Percent';
 import Sqrt from '../lib/calculations/Sqrt';
 import Square from '../lib/calculations/Square';
+import Inverse from '../lib/calculations/Inverse';
 
 export default {
     'AddNumberToken': AddNumberToken,
@@ -17,5 +18,6 @@ export default {
     'Backspace': Backspace,
     'Percent': Percent,
     'Sqrt': Sqrt,
-    'Square': Square
+    'Square': Square,
+    'Inverse': Inverse
 };

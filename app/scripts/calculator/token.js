@@ -1,10 +1,13 @@
 import mathjs from 'mathjs';
 import {findSmallestButGreaterThan} from 'calculator/utils';
 
-const typeToSymbol = {
-    'sqrt': '&radic;',
-    'square': 'sqr',
-    'inverse': '1/'
+import {negate} from 'calculator/mathjs/negate';
+
+const typeToSymbolPattern = {
+    'sqrt': '&radic;($)',
+    'square': 'sqr($)',
+    'inverse': '1/($)',
+    'negate': '-$'
 };
 
 export function toString (tokens, options){
@@ -22,8 +25,8 @@ export function toString (tokens, options){
         }
 
         if(str.type){
-            let symbol = typeToSymbol[str.type] || str.type;
-            str = `${symbol}(${toString(str.tokens)})`;
+            let pattern = typeToSymbolPattern[str.type];
+            str = pattern.replace('$', toString(str.tokens));
         }
 
         s += str;
@@ -37,7 +40,9 @@ export function evaluateTokens(tokens){
     let chain;
 
     if(nextOperatorIndex === -1 ){
-        if(tokens[tokens.length-1].type){
+        if(tokens[tokens.length-1].type === 'negate'){
+            chain = mathjs.chain(negate(tokens[tokens.length-1].tokens));
+        } else if(tokens[tokens.length-1].type){
             chain = mathjs.chain(evaluateTokens(tokens[tokens.length-1].tokens))[getMethodName(tokens[tokens.length-1])]();
         }
         else{
@@ -45,17 +50,18 @@ export function evaluateTokens(tokens){
         }
     }
     else {
-        if(tokens[nextOperatorIndex-1].type){
+        if(tokens[nextOperatorIndex-1].type === 'negate'){
+            chain = mathjs.chain(negate(tokens[nextOperatorIndex-1].tokens));
+        } else if(tokens[nextOperatorIndex-1].type){
             chain = mathjs.chain(evaluateTokens(tokens[nextOperatorIndex-1].tokens))[getMethodName(tokens[nextOperatorIndex-1])]();
-        }
-        else {
+        } else {
             chain = mathjs.chain(tokens.slice(0, nextOperatorIndex).join(''));
         }
     }
 
     for(let i = nextOperatorIndex; i < tokens.length && nextOperatorIndex !== -1;){
         let methodName = getMethodName(tokens[i]);
-        let hasType = !!tokens[i].type;
+        let type = tokens[i].type;
         let methodTokens = tokens[i].tokens;
         i++;
 
@@ -64,10 +70,9 @@ export function evaluateTokens(tokens){
         if(nextOperatorIndex === -1){ nextOperatorIndex = tokens.length; }
         if(i === tokens.length){ continue; }
 
-        if(hasType){
+        if(!!type){
             chain = chain[methodName](methodTokens.join(''));
-        }
-        else{
+        } else {
             chain = chain[methodName](evaluateTokens(tokens.slice(i, nextOperatorIndex)));
         }
 

@@ -8,6 +8,7 @@ import Percent from '../lib/calculations/Percent';
 import Sqrt from '../lib/calculations/Sqrt';
 import Square from '../lib/calculations/Square';
 import Inverse from '../lib/calculations/Inverse';
+import Negate from '../lib/calculations/Negate';
 
 export default {
     'AddNumberToken': AddNumberToken,
@@ -19,5 +20,6 @@ export default {
     'Percent': Percent,
     'Sqrt': Sqrt,
     'Square': Square,
-    'Inverse': Inverse
+    'Inverse': Inverse,
+    'Negate': Negate
 };

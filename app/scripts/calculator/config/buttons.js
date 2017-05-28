@@ -193,8 +193,12 @@ export default {
         }
     },
     'PLUS_MINUS' : { 'html': '&plusmn;', 'class': 'plus-minus',
+        'calculations': {
+            'negate': { 'calculationName': 'Negate' }
+        },
         'changes':{
-            'toggleDisableWhenInvalid': { 'changeName': 'ToggleDisableWhenInvalid', 'on': '&tokenManager'}
+            'toggleDisableWhenInvalid': { 'changeName': 'ToggleDisableWhenInvalid', 'on': '&tokenManager'},
+            'toggleDisableWhenArithmetic': { 'changeName': 'ToggleDisableWhenArithmetic', 'on': '&tokenManager'}
         }
     },
     'ZERO' : { 'html': '0', 'class': 'number-0', 'mathSymbol': '0',

@@ -18,6 +18,8 @@ import ChangeManager from 'calculator/lib/managers/ChangeManager';
 
 import standard from 'calculator/config/standard';
 
+import 'calculator/mathjs/negate';
+
 export default class {
     constructor(options){
         let mode = standard;

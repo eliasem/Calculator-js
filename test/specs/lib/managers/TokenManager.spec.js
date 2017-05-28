@@ -104,6 +104,15 @@ describe('Token Manager', () => {
                 expect(underTest.expressionStr).to.equal('&radic;(25) + ');
                 expect(underTest.answerStr).to.equal('40');
             });
+
+            it('should be able to handle negate token', () => {
+                underTest.push('27', {replace:true});
+                underTest.push('+');
+                underTest.push({type:'negate', tokens:['3']});
+
+                expect(underTest.expressionStr).to.equal('27 + ');
+                expect(underTest.answerStr).to.equal('-3');
+            });
         });
 
     });
@@ -285,14 +294,6 @@ describe('Token Manager', () => {
     });
 
     describe('setToInvalid', () => {
-
-        beforeEach(() => {
-           // sinon.stub(underTest, 'trigger');
-        });
-
-        afterEach(() => {
-           // underTest.trigger.restore();
-        });
 
         it('should set the state and trigger change event', () => {
             let changeCallback = sinon.stub();

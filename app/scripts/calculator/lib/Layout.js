@@ -55,7 +55,7 @@ function displayValidAnswer(errorCode, answer){
     }
 }
 
-function renderCustomExpressionAndAnswer(expression, answer){
+function renderCustomExpressionAndAnswer(errorCode, expression, answer){
     this.$expressionArea.html(expression);
     displayValidAnswer.call(this, answer);
 }

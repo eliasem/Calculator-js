@@ -10807,7 +10807,20 @@ define('calculator/utils',["exports"], function (exports) {
 });
 //# sourceMappingURL=utils.js.map
 ;
-define('calculator/token',['exports', 'mathjs', 'calculator/utils'], function (exports, _mathjs, _utils) {
+define('calculator/mathjs/negate',['exports', 'calculator/token'], function (exports, _token) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.negate = negate;
+    function negate(tokens) {
+        return -(0, _token.evaluateTokens)(tokens);
+    }
+});
+//# sourceMappingURL=negate.js.map
+;
+define('calculator/token',['exports', 'mathjs', 'calculator/utils', 'calculator/mathjs/negate'], function (exports, _mathjs, _utils, _negate) {
     'use strict';
 
     Object.defineProperty(exports, "__esModule", {
@@ -10825,10 +10838,11 @@ define('calculator/token',['exports', 'mathjs', 'calculator/utils'], function (e
         };
     }
 
-    var typeToSymbol = {
-        'sqrt': '&radic;',
-        'square': 'sqr',
-        'inverse': '1/'
+    var typeToSymbolPattern = {
+        'sqrt': '&radic;($)',
+        'square': 'sqr($)',
+        'inverse': '1/($)',
+        'negate': '-$'
     };
 
     function toString(tokens, options) {
@@ -10847,8 +10861,8 @@ define('calculator/token',['exports', 'mathjs', 'calculator/utils'], function (e
             }
 
             if (str.type) {
-                var symbol = typeToSymbol[str.type] || str.type;
-                str = symbol + '(' + toString(str.tokens) + ')';
+                var pattern = typeToSymbolPattern[str.type];
+                str = pattern.replace('$', toString(str.tokens));
             }
 
             s += str;
@@ -10862,13 +10876,17 @@ define('calculator/token',['exports', 'mathjs', 'calculator/utils'], function (e
         var chain = void 0;
 
         if (nextOperatorIndex === -1) {
-            if (tokens[tokens.length - 1].type) {
+            if (tokens[tokens.length - 1].type === 'negate') {
+                chain = _mathjs2.default.chain((0, _negate.negate)(tokens[tokens.length - 1].tokens));
+            } else if (tokens[tokens.length - 1].type) {
                 chain = _mathjs2.default.chain(evaluateTokens(tokens[tokens.length - 1].tokens))[getMethodName(tokens[tokens.length - 1])]();
             } else {
                 chain = _mathjs2.default.chain(tokens.slice(0, tokens.length).join(''));
             }
         } else {
-            if (tokens[nextOperatorIndex - 1].type) {
+            if (tokens[nextOperatorIndex - 1].type === 'negate') {
+                chain = _mathjs2.default.chain((0, _negate.negate)(tokens[nextOperatorIndex - 1].tokens));
+            } else if (tokens[nextOperatorIndex - 1].type) {
                 chain = _mathjs2.default.chain(evaluateTokens(tokens[nextOperatorIndex - 1].tokens))[getMethodName(tokens[nextOperatorIndex - 1])]();
             } else {
                 chain = _mathjs2.default.chain(tokens.slice(0, nextOperatorIndex).join(''));
@@ -10877,7 +10895,7 @@ define('calculator/token',['exports', 'mathjs', 'calculator/utils'], function (e
 
         for (var i = nextOperatorIndex; i < tokens.length && nextOperatorIndex !== -1;) {
             var methodName = getMethodName(tokens[i]);
-            var hasType = !!tokens[i].type;
+            var type = tokens[i].type;
             var methodTokens = tokens[i].tokens;
             i++;
 
@@ -10890,7 +10908,7 @@ define('calculator/token',['exports', 'mathjs', 'calculator/utils'], function (e
                 continue;
             }
 
-            if (hasType) {
+            if (!!type) {
                 chain = chain[methodName](methodTokens.join(''));
             } else {
                 chain = chain[methodName](evaluateTokens(tokens.slice(i, nextOperatorIndex)));
@@ -11118,7 +11136,71 @@ define('calculator/lib/calculations/Inverse',['exports', 'calculator/token', 'ca
 });
 //# sourceMappingURL=Inverse.js.map
 ;
-define('calculator/config/calculations',['exports', '../lib/calculations/AddNumberToken', '../lib/calculations/AddArithmeticToken', '../lib/calculations/Evaluate', '../lib/calculations/ClearTokens', '../lib/calculations/ClearLastTokens', '../lib/calculations/Backspace', '../lib/calculations/Percent', '../lib/calculations/Sqrt', '../lib/calculations/Square', '../lib/calculations/Inverse'], function (exports, _AddNumberToken, _AddArithmeticToken, _Evaluate, _ClearTokens, _ClearLastTokens, _Backspace, _Percent, _Sqrt, _Square, _Inverse) {
+define('calculator/lib/calculations/Negate',['exports', 'calculator/token', 'calculator/constant/TokenManagerEvents', 'calculator/constant/TokenManagerStates'], function (exports, _token, _TokenManagerEvents, _TokenManagerStates) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+
+    var _TokenManagerEvents2 = _interopRequireDefault(_TokenManagerEvents);
+
+    var _TokenManagerStates2 = _interopRequireDefault(_TokenManagerStates);
+
+    function _interopRequireDefault(obj) {
+        return obj && obj.__esModule ? obj : {
+            default: obj
+        };
+    }
+
+    exports.default = function (tokenManager, button) {
+
+        var lastOperatorIndex = (0, _token.getLastOperatorIndex)(tokenManager.tokens);
+
+        if (lastOperatorIndex === tokenManager.tokens - 1) {
+            return;
+        }
+
+        var replace = true;
+
+        if (tokenManager.tokens[tokenManager.tokens.length - 1].type === 'negate') {
+
+            var tokens = tokenManager.tokens[tokenManager.tokens.length - 1].tokens;
+
+            tokenManager.push(tokens[0], { replace: true });
+            for (var i = 1; i < tokens.length; ++i) {
+                tokenManager.push(tokens[i]);
+            }
+        } else {
+            var _tokens = tokenManager.tokens.slice(lastOperatorIndex + 1);
+
+            if (_tokens[0] === '0' && _tokens.length === 1) {
+                return;
+            }
+
+            if (_tokens.length === 0) {
+                return;
+            }
+
+            tokenManager.tokens.splice(lastOperatorIndex + 1, tokenManager.tokens.length - (lastOperatorIndex + 1));
+
+            tokenManager.push({
+                type: 'negate',
+                tokens: _tokens
+            }, { replace: false });
+        }
+
+        /* if(!replace){
+             tokenManager.trigger(TokenManagerEvents.CUSTOM, tokenManager.expressionStr, tokenManager.answerStr);
+         } else {
+             tokenManager.trigger(TokenManagerEvents.EVALUATION);
+         }
+        */
+    };
+});
+//# sourceMappingURL=Negate.js.map
+;
+define('calculator/config/calculations',['exports', '../lib/calculations/AddNumberToken', '../lib/calculations/AddArithmeticToken', '../lib/calculations/Evaluate', '../lib/calculations/ClearTokens', '../lib/calculations/ClearLastTokens', '../lib/calculations/Backspace', '../lib/calculations/Percent', '../lib/calculations/Sqrt', '../lib/calculations/Square', '../lib/calculations/Inverse', '../lib/calculations/Negate'], function (exports, _AddNumberToken, _AddArithmeticToken, _Evaluate, _ClearTokens, _ClearLastTokens, _Backspace, _Percent, _Sqrt, _Square, _Inverse, _Negate) {
     'use strict';
 
     Object.defineProperty(exports, "__esModule", {
@@ -11145,6 +11227,8 @@ define('calculator/config/calculations',['exports', '../lib/calculations/AddNumb
 
     var _Inverse2 = _interopRequireDefault(_Inverse);
 
+    var _Negate2 = _interopRequireDefault(_Negate);
+
     function _interopRequireDefault(obj) {
         return obj && obj.__esModule ? obj : {
             default: obj
@@ -11161,7 +11245,8 @@ define('calculator/config/calculations',['exports', '../lib/calculations/AddNumb
         'Percent': _Percent2.default,
         'Sqrt': _Sqrt2.default,
         'Square': _Square2.default,
-        'Inverse': _Inverse2.default
+        'Inverse': _Inverse2.default,
+        'Negate': _Negate2.default
     };
 });
 //# sourceMappingURL=calculations.js.map
@@ -12310,7 +12395,7 @@ define('calculator/lib/Layout',['exports', 'jquery', './behaviours/Referencable'
         }
     }
 
-    function renderCustomExpressionAndAnswer(expression, answer) {
+    function renderCustomExpressionAndAnswer(errorCode, expression, answer) {
         this.$expressionArea.html(expression);
         displayValidAnswer.call(this, answer);
     }
@@ -12899,7 +12984,8 @@ define('calculator/lib/managers/TokenManager',['exports', 'calculator/token', 'c
             'expressionStr': {
                 get: function get() {
                     var lastOperatorIndex = (0, _token.getLastOperatorIndex)(_this.tokens);
-                    if (_this.tokens[_this.tokens.length - 1].type) {
+                    var type = _this.tokens[_this.tokens.length - 1].type;
+                    if (type && type !== 'negate') {
                         return (0, _token.toString)(_this.tokens.slice(0, _this.tokens.length));
                     }
                     return (0, _token.toString)(_this.tokens.slice(0, lastOperatorIndex + 1));
@@ -12908,7 +12994,8 @@ define('calculator/lib/managers/TokenManager',['exports', 'calculator/token', 'c
             'answerStr': {
                 get: function get() {
                     var lastOperatorIndex = (0, _token.getLastOperatorIndex)(_this.tokens);
-                    if (_this.tokens[_this.tokens.length - 1].type) {
+                    var type = _this.tokens[_this.tokens.length - 1].type;
+                    if (type && type !== 'negate') {
                         return '';
                     }
                     return (0, _token.toString)(_this.tokens.slice(lastOperatorIndex + 1));
@@ -13394,6 +13481,19 @@ define('calculator/lib/managers/MemoryManager',['exports', 'jquery', 'calculator
 });
 //# sourceMappingURL=MemoryManager.js.map
 ;
+define('calculator/lib/changes/ToggleDisableWhenArithmetic',['exports'], function (exports) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+
+    exports.default = function (manager, button) {
+        button.$el.toggleClass('disabled', manager.isLastToken(['+', '-', '&times;', '&divide;']));
+    };
+});
+//# sourceMappingURL=ToggleDisableWhenArithmetic.js.map
+;
 define('calculator/lib/changes/ToggleDisableWhenEmpty',['exports'], function (exports) {
     'use strict';
 
@@ -13428,12 +13528,14 @@ define('calculator/lib/changes/ToggleDisableWhenInvalid',['exports', 'calculator
 });
 //# sourceMappingURL=ToggleDisableWhenInvalid.js.map
 ;
-define('calculator/config/changes',['exports', '../lib/changes/ToggleDisableWhenEmpty', '../lib/changes/ToggleDisableWhenInvalid'], function (exports, _ToggleDisableWhenEmpty, _ToggleDisableWhenInvalid) {
+define('calculator/config/changes',['exports', '../lib/changes/ToggleDisableWhenArithmetic', '../lib/changes/ToggleDisableWhenEmpty', '../lib/changes/ToggleDisableWhenInvalid'], function (exports, _ToggleDisableWhenArithmetic, _ToggleDisableWhenEmpty, _ToggleDisableWhenInvalid) {
     'use strict';
 
     Object.defineProperty(exports, "__esModule", {
         value: true
     });
+
+    var _ToggleDisableWhenArithmetic2 = _interopRequireDefault(_ToggleDisableWhenArithmetic);
 
     var _ToggleDisableWhenEmpty2 = _interopRequireDefault(_ToggleDisableWhenEmpty);
 
@@ -13446,6 +13548,7 @@ define('calculator/config/changes',['exports', '../lib/changes/ToggleDisableWhen
     }
 
     exports.default = {
+        'ToggleDisableWhenArithmetic': _ToggleDisableWhenArithmetic2.default,
         'ToggleDisableWhenEmpty': _ToggleDisableWhenEmpty2.default,
         'ToggleDisableWhenInvalid': _ToggleDisableWhenInvalid2.default
     };
@@ -13801,8 +13904,12 @@ define('calculator/config/buttons',['exports'], function (exports) {
             }
         },
         'PLUS_MINUS': { 'html': '&plusmn;', 'class': 'plus-minus',
+            'calculations': {
+                'negate': { 'calculationName': 'Negate' }
+            },
             'changes': {
-                'toggleDisableWhenInvalid': { 'changeName': 'ToggleDisableWhenInvalid', 'on': '&tokenManager' }
+                'toggleDisableWhenInvalid': { 'changeName': 'ToggleDisableWhenInvalid', 'on': '&tokenManager' },
+                'toggleDisableWhenArithmetic': { 'changeName': 'ToggleDisableWhenArithmetic', 'on': '&tokenManager' }
             }
         },
         'ZERO': { 'html': '0', 'class': 'number-0', 'mathSymbol': '0',
@@ -18466,7 +18573,7 @@ process.umask = function() { return 0; };
 
 define("babelPolyfill", function(){});
 
-define('main',['exports', 'jquery', 'calculator/lib/Actions', 'calculator/lib/Calculations', 'calculator/config/actions', 'calculator/config/calculations', 'calculator/lib/Layout', 'calculator/lib/managers/CalculationManager', 'calculator/lib/managers/ActionManager', 'calculator/lib/managers/TokenManager', 'calculator/lib/managers/HistoryManager', 'calculator/lib/managers/MemoryManager', 'calculator/lib/managers/ChangeManager', 'calculator/config/standard', 'babelPolyfill'], function (exports, _jquery, _Actions, _Calculations, _actions, _calculations, _Layout, _CalculationManager, _ActionManager, _TokenManager, _HistoryManager, _MemoryManager, _ChangeManager, _standard) {
+define('main',['exports', 'jquery', 'calculator/lib/Actions', 'calculator/lib/Calculations', 'calculator/config/actions', 'calculator/config/calculations', 'calculator/lib/Layout', 'calculator/lib/managers/CalculationManager', 'calculator/lib/managers/ActionManager', 'calculator/lib/managers/TokenManager', 'calculator/lib/managers/HistoryManager', 'calculator/lib/managers/MemoryManager', 'calculator/lib/managers/ChangeManager', 'calculator/config/standard', 'babelPolyfill', 'calculator/mathjs/negate'], function (exports, _jquery, _Actions, _Calculations, _actions, _calculations, _Layout, _CalculationManager, _ActionManager, _TokenManager, _HistoryManager, _MemoryManager, _ChangeManager, _standard) {
         'use strict';
 
         Object.defineProperty(exports, "__esModule", {

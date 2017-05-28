@@ -116,8 +116,9 @@ function createAccessors(){
     Object.defineProperties(this, {
         'expressionStr' : {
             get: () => {
-                var lastOperatorIndex = getLastOperatorIndex(this.tokens);
-                if(this.tokens[this.tokens.length-1].type){
+                let lastOperatorIndex = getLastOperatorIndex(this.tokens);
+                let type = this.tokens[this.tokens.length-1].type;
+                if(type && type !== 'negate'){
                     return toString(this.tokens.slice(0, this.tokens.length));
                 }
                 return toString(this.tokens.slice(0, lastOperatorIndex + 1));
@@ -125,8 +126,9 @@ function createAccessors(){
         },
         'answerStr' : {
             get: () => {
-                var lastOperatorIndex = getLastOperatorIndex(this.tokens);
-                if(this.tokens[this.tokens.length-1].type){
+                let lastOperatorIndex = getLastOperatorIndex(this.tokens);
+                let type = this.tokens[this.tokens.length-1].type;
+                if(type && type !== 'negate'){
                     return '';
                 }
                 return toString(this.tokens.slice(lastOperatorIndex + 1));
